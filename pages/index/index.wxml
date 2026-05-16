@@ -128,7 +128,6 @@
     wx:for="{{displayProducts}}"
     wx:key="id"
     product="{{item}}"
-    bind:tap="onProductTap"
   />
 </view>
 

@@ -199,7 +199,11 @@ Page({
   },
 
   onProductTap(e) {
-    const id = e.detail.id;
-    wx.showToast({ title: '产品详情 ' + id, icon: 'none' });
+    const app = getApp();
+    const product = this.data.allProducts.find(p => p.id === e.detail.id);
+    if (product) {
+      app.globalData.currentProduct = product;
+      wx.navigateTo({ url: '/pages/product-detail/product-detail' });
+    }
   }
 });

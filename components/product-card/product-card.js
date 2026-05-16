@@ -8,7 +8,11 @@ Component({
 
   methods: {
     onTap() {
-      this.triggerEvent('tap', { id: this.data.product.id });
+      const app = getApp();
+      app.globalData.currentProduct = this.data.product;
+      wx.navigateTo({
+        url: '/pages/product-detail/product-detail'
+      });
     }
   }
 });

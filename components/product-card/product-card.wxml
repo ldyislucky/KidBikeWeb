@@ -6,16 +6,9 @@
   </view>
   <view class="card-body">
     <view class="card-title">{{product.title}}</view>
-    <view class="card-meta">
-      <text class="meta-text">货号 {{product.itemNo}}</text>
-      <text class="meta-dot">·</text>
-      <text class="meta-text">{{product.updateTime}}</text>
-    </view>
-    <view class="card-footer">
-      <view class="card-price">
-        <text class="price-sign">¥</text>
-        <text class="price-num">{{product.price}}</text>
-      </view>
+    <view class="card-price">
+      <text class="price-sign">¥</text>
+      <text class="price-num">{{product.price}}</text>
     </view>
   </view>
 </view>

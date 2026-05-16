@@ -2,7 +2,8 @@
   "pages": [
     "pages/index/index",
     "pages/product-form/product-form",
-    "pages/my/my"
+    "pages/my/my",
+    "pages/product-detail/product-detail"
   ],
   "window": {
     "navigationBarTitleText": "KidBike 儿童自行车",

@@ -5,6 +5,7 @@ App({
     });
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    currentProduct: null
   }
 });
