@@ -1,0 +1,12 @@
+{
+  "usingComponents": {
+    "product-card": "/components/product-card/product-card"
+  },
+  "componentPlaceholder": {
+    "product-card": "view"
+  },
+  "navigationBarTitleText": "KidBike 儿童自行车",
+  "navigationBarBackgroundColor": "#FF6B6B",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "light"
+}

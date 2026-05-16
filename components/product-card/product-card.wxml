@@ -1,0 +1,21 @@
+<view class="product-card" bindtap="onTap">
+  <view class="card-img-wrap">
+    <image class="card-img" src="{{product.image}}" mode="aspectFill" />
+    <view class="badge badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
+    <view class="badge badge-stock" wx:if="{{!product.isInStock}}">预售</view>
+  </view>
+  <view class="card-body">
+    <view class="card-title">{{product.title}}</view>
+    <view class="card-meta">
+      <text class="meta-text">货号 {{product.itemNo}}</text>
+      <text class="meta-dot">·</text>
+      <text class="meta-text">{{product.updateTime}}</text>
+    </view>
+    <view class="card-footer">
+      <view class="card-price">
+        <text class="price-sign">¥</text>
+        <text class="price-num">{{product.price}}</text>
+      </view>
+    </view>
+  </view>
+</view>

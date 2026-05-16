@@ -1,0 +1,39 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 5088338 */
+  src: 
+       url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAATQAAsAAAAACagAAASDAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHFQGYACDTgqFdIUIATYCJAMYCw4ABCAFhGcHZRtnCBEVpF+Q/UywbR2shQPReBctRhtUqHC51Jm1aVto8CYe/tvv9/vMzL2oZk1iobK6abOkicyL4KF6ipRE5X8PmT9+Ux94FFIT4aiIkM5Jd6QiChMx/cvu3zQAFudq7oCEjTBHaJ882kHKg5Qffv5+Pq+scVjHLgCsuq3xgc0HNKCotIl8Tf+C/lXKu/kFKKP7igBaRUiGLmYXVoL+uLqrBZzgjPYAcWUc19dWA60Y4TWMQGtIdGWBPEIF0hV6D8CD//3xF6KCBgmRGWctHWVJcMnibRnF5P8y+ROU4Rq40QmogAxMLswcF/XOc1iYnIRRl8VxmUCN01DooNUhlgjL6P//HH5YujW12nSCNMg/PBwBBVEzlO0caStVgx/eNiKBHyGIDH5EIAL8GEYU8GMEUYEfoxZpIPHgI3qA/wAxDQZ5kj1BhN4EaoQOtHVAdKWXcO4dZnGkZZOZe/eoM7HmyB21/vrWIagvD9/WMDd7lT3pvfYgyM32QQ26smKOTengnGVQLs8V5V1wQtYG7wRuWIkQjSdq7cczD3L981hmbspFd0LZUz3H+MKkK1Uv6XOF53S58pletOs+QzKuWGZjs2yZrbB8pb29dWjtSqVTLT9/PvflS+XFiznPnkkGYPfVU8obFfK5yCdlG2mZUVNrlGolRfvM7ERj7wzm7Qat0Vm6oo28q0pbhsNwOllK3zFZh7Svq+Xzcy8qZ+acOsvPcNVe1jboLmldQ+YlN3/XD3Obnekxiz1g98/ujntRWPsTNbDSsfcNJCxg7D32rYvgwjl/y8/LMxU72BruGWoi70ZesC3it7uey0w/lhZe6XHhR2XhX/J/LW/mOImv+8xLzmzmavnPdbzEcWa+9jOvOEniJQ9ZOeG9YBACvZs7PI8KH4QCr8WrgruirKNCBANsTX6UEC+K8W2m+DixPV6cFN8uxqt78WQ2WbTwrT5T/5ZZ3dKy2nX127cOP8y9kbWnoGD3btsOhakbwcTzLG0JXP4+zQJ9BjNelC/Q5xzMnpdrmzsrey+TEb1mf0bua9v3MzH+nTGrsmo/1ja1JthDmPCuMAaGAL7lfACTGWs0b8amsy7li1ja+K/5H7MFID+ij6jsb+A9n1kqMvxXelYAvqT2NC7wPVqgu5BKVAALaUq1B2IWNURdylrbYwRQy0Q9bjXQTgMZeXt9GErdB8cJdEokQ0JxhozmhSukIKhoREGNlgStgmW52lgTZ1VpASZM5QDB2g0ovdOAYd3E4aSXQLDzCUisv6BmDN1uGn7hwCfP68gZNH+gkQZhaaLf7TuXqat9Ueyb+6C5COw3u2zmjQ/c9zEnZHmIUYDw1MOrdB7vOgLryXCMGxWjfWy3ouwtG6S+ePK8jpxB8wcaaRAudkz/vncuU1d7EPdt90EQ8N3DfrMDcG/KAWq5kP4hy0OMQhgnPPXwqtp5ZyYJbPkwwzFuVIe4fWx5LIEqN9Or+1vcAa1g7FUjKXKUqKKOJqVTpf3YeXGNZP9GISHyEFb1enc4lY2uB6PXx+sijXOJpqaiAAA=') format('woff2'),
+       url('//at.alicdn.com/t/c/font_5088338_7k5zffrly17.woff?t=1765720257797') format('woff'),
+       url('//at.alicdn.com/t/c/font_5088338_7k5zffrly17.ttf?t=1765720257797') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shu1:before {
+  content: "\e630";
+}
+
+.icon-shu-copy:before {
+  content: "\e67f";
+}
+
+.icon-shu:before {
+  content: "\e623";
+}
+
+.icon-success:before {
+  content: "\e62c";
+}
+
+.icon-a-024_bianji-37:before {
+  content: "\e67d";
+}
+
+.icon-a-024_qianbao:before {
+  content: "\e67e";
+}

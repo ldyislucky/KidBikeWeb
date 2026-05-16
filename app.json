@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/product-form/product-form",
+    "pages/my/my"
+  ],
+  "window": {
+    "navigationBarTitleText": "KidBike 儿童自行车",
+    "navigationBarBackgroundColor": "#FF6B6B",
+    "enablePullDownRefresh": true,
+    "backgroundColor": "#FFF5F0",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "selectedColor": "#FF6B6B",
+    "color": "#B2BEC3",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "position": "bottom",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "/static/images/home.png",
+        "selectedIconPath": "/static/images/home_select.png"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "text": "我的",
+        "iconPath": "/static/images/my.png",
+        "selectedIconPath": "/static/images/my_select.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

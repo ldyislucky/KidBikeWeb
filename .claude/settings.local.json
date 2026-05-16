@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp \"D:/li/documents/code/web/童车玩具厂小程序/BabyStrollerAndToyFactoryWeb/static/images/home.png\" \"D:/li/documents/code/web/KidBikeWeb/static/images/home.png\")",
+      "Bash(cp \"D:/li/documents/code/web/童车玩具厂小程序/BabyStrollerAndToyFactoryWeb/static/images/home_select.png\" \"D:/li/documents/code/web/KidBikeWeb/static/images/home_select.png\")",
+      "Bash(cp \"D:/li/documents/code/web/童车玩具厂小程序/BabyStrollerAndToyFactoryWeb/static/images/my.png\" \"D:/li/documents/code/web/KidBikeWeb/static/images/my.png\")",
+      "Bash(cp \"D:/li/documents/code/web/童车玩具厂小程序/BabyStrollerAndToyFactoryWeb/static/images/my_select.png\" \"D:/li/documents/code/web/KidBikeWeb/static/images/my_select.png\")",
+      "Bash(cp \"D:/li/documents/code/web/童车玩具厂小程序/BabyStrollerAndToyFactoryWeb/static/vectorImages/font.wxss\" \"D:/li/documents/code/web/KidBikeWeb/static/vectorImages/font.wxss\")"
+    ]
+  }
+}

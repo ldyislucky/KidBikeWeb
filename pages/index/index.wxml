@@ -1,0 +1,140 @@
+<!-- 顶部导航 -->
+<view class="header">
+  <view class="header-wave"></view>
+  <view class="header-content">
+    <view class="logo-area">
+      <view class="logo-icon">
+        <text class="logo-text">🚲</text>
+      </view>
+      <view class="brand-info">
+        <view class="company-name">KidBike</view>
+        <view class="company-sub">儿童自行车</view>
+      </view>
+    </view>
+    <view class="header-actions">
+      <view class="action-btn" bindtap="onSearchTap">
+        <text class="iconfont icon-shu-copy"></text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 搜索框 -->
+<view class="search-container">
+  <view class="search-box">
+    <text class="search-icon">🔍</text>
+    <input
+      class="search-input"
+      placeholder="搜索货号/产品名..."
+      value="{{searchValue}}"
+      bindinput="onSearchInput"
+      confirm-type="search"
+    />
+  </view>
+</view>
+
+<!-- 分类导航 -->
+<view class="category-bar">
+  <view class="category-inner">
+    <view
+      wx:for="{{categories}}"
+      wx:key="id"
+      class="category-item {{item.active ? 'active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="onCategoryTap"
+    >
+      <text>{{item.name}}</text>
+      <view class="category-indicator" wx:if="{{item.active}}"></view>
+    </view>
+  </view>
+</view>
+
+<!-- 筛选排序栏 -->
+<view class="filter-bar">
+  <view class="sort-options">
+    <view class="sort-option" data-type="{{0}}" bindtap="onSortTap">
+      <text>货号</text>
+      <text class="sort-arrow" wx:if="{{sortType === 0}}">{{sortAsc ? '↑' : '↓'}}</text>
+    </view>
+    <view class="sort-option" data-type="{{1}}" bindtap="onSortTap">
+      <text>时间</text>
+      <text class="sort-arrow" wx:if="{{sortType === 1}}">{{sortAsc ? '↑' : '↓'}}</text>
+    </view>
+    <view class="sort-option" data-type="{{2}}" bindtap="onSortTap">
+      <text>价格</text>
+      <text class="sort-arrow" wx:if="{{sortType === 2}}">{{sortAsc ? '↑' : '↓'}}</text>
+    </view>
+  </view>
+  <view class="filter-right">
+    <view class="filter-btn {{hasActiveFilter ? 'filter-btn-active' : ''}}" bindtap="onFilterTap">
+      <text>筛选</text>
+      <view class="filter-dot" wx:if="{{hasActiveFilter}}"></view>
+    </view>
+    <view class="product-count">共 <text class="count-num">{{displayProducts.length}}</text> 款</view>
+  </view>
+</view>
+
+<!-- 筛选面板 -->
+<view class="filter-overlay" wx:if="{{showFilterPanel}}" bindtap="onFilterOverlayTap"></view>
+<view class="filter-panel {{showFilterPanel ? 'filter-panel-show' : ''}}">
+  <view class="filter-section">
+    <view class="filter-section-title">💰 价格区间</view>
+    <view class="filter-tags">
+      <view
+        wx:for="{{priceRanges}}"
+        wx:key="value"
+        class="filter-tag {{filterPriceRange === item.value ? 'filter-tag-active' : ''}}"
+        data-key="filterPriceRange"
+        data-value="{{item.value}}"
+        bindtap="onFilterOptionTap"
+      >{{item.label}}</view>
+    </view>
+  </view>
+  <view class="filter-section">
+    <view class="filter-section-title">📅 更新时间</view>
+    <view class="filter-tags">
+      <view
+        wx:for="{{timeRanges}}"
+        wx:key="value"
+        class="filter-tag {{filterTimeRange === item.value ? 'filter-tag-active' : ''}}"
+        data-key="filterTimeRange"
+        data-value="{{item.value}}"
+        bindtap="onFilterOptionTap"
+      >{{item.label}}</view>
+    </view>
+  </view>
+  <view class="filter-section">
+    <view class="filter-section-title">📦 库存状态</view>
+    <view class="filter-tags">
+      <view
+        wx:for="{{stockStatuses}}"
+        wx:key="value"
+        class="filter-tag {{filterStockStatus === item.value ? 'filter-tag-active' : ''}}"
+        data-key="filterStockStatus"
+        data-value="{{item.value}}"
+        bindtap="onFilterOptionTap"
+      >{{item.label}}</view>
+    </view>
+  </view>
+  <view class="filter-actions">
+    <view class="filter-reset-btn" bindtap="onFilterReset">重置</view>
+    <view class="filter-confirm-btn" bindtap="onFilterConfirm">确定</view>
+  </view>
+</view>
+
+<!-- 产品列表 -->
+<view class="product-grid">
+  <product-card
+    wx:for="{{displayProducts}}"
+    wx:key="id"
+    product="{{item}}"
+    bind:tap="onProductTap"
+  />
+</view>
+
+<!-- 空状态 -->
+<view class="empty-state" wx:if="{{displayProducts.length === 0}}">
+  <view class="empty-illustration">📭</view>
+  <text class="empty-text">暂无相关产品</text>
+  <text class="empty-hint">试试调整筛选条件或搜索关键词</text>
+</view>

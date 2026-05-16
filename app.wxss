@@ -1,0 +1,20 @@
+@import "/static/vectorImages/font.wxss";
+
+page {
+  --primary: #FF6B6B;
+  --primary-light: #FF8E53;
+  --bg: #FFF5F0;
+  --card: #FFFFFF;
+  --text: #2D3436;
+  --text-secondary: #636E72;
+  --accent: #FFD93D;
+  --price: #FF6B6B;
+  --border: #F0E4DC;
+  --shadow: 0 4rpx 20rpx rgba(255, 107, 107, 0.08);
+
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  padding-bottom: 0;
+}

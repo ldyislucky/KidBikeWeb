@@ -1,0 +1,77 @@
+<view hidden="{{!pageReady}}">
+<!-- 产品图片上传 -->
+<view class="form-card">
+  <view class="card-header">
+    <text class="card-header-icon">📸</text>
+    <text class="card-header-title">产品图片</text>
+  </view>
+  <view class="image-upload" bindtap="onChooseImage">
+    <image wx:if="{{productImage}}" class="preview-image" src="{{productImage}}" mode="aspectFill"></image>
+    <view wx:else class="upload-placeholder">
+      <text class="upload-icon">+</text>
+      <text class="upload-hint">点击上传产品图片</text>
+    </view>
+  </view>
+</view>
+
+<!-- 基本信息 -->
+<view class="form-card">
+  <view class="card-header">
+    <text class="card-header-icon">📋</text>
+    <text class="card-header-title">基本信息</text>
+  </view>
+  <view class="form-item">
+    <view class="form-label">
+      <text>产品名称</text>
+      <text class="required">*</text>
+    </view>
+    <input class="form-input" placeholder="请输入产品名称" value="{{title}}" bindinput="onTitleInput" />
+  </view>
+  <view class="form-item">
+    <view class="form-label">
+      <text>货号</text>
+      <text class="required">*</text>
+    </view>
+    <input class="form-input" placeholder="请输入货号，如 BK-001" value="{{itemNo}}" bindinput="onItemNoInput" />
+  </view>
+  <view class="form-item no-border">
+    <view class="form-label">
+      <text>价格</text>
+      <text class="required">*</text>
+    </view>
+    <view class="price-input-wrap">
+      <text class="price-prefix">¥</text>
+      <input class="form-input price-input" type="digit" placeholder="请输入价格" value="{{price}}" bindinput="onPriceInput" />
+    </view>
+  </view>
+</view>
+
+<!-- 产品属性 -->
+<view class="form-card">
+  <view class="card-header">
+    <text class="card-header-icon">🏷️</text>
+    <text class="card-header-title">产品属性</text>
+  </view>
+  <view class="form-item switch-row">
+    <view class="switch-info">
+      <text class="switch-label">主推产品</text>
+      <text class="switch-desc">开启后将在首页主推栏目展示</text>
+    </view>
+    <switch checked="{{isRecommend}}" bindchange="onRecommendChange" color="#FF6B6B" />
+  </view>
+  <view class="form-item switch-row no-border">
+    <view class="switch-info">
+      <text class="switch-label">现货产品</text>
+      <text class="switch-desc">标记该产品为现货状态</text>
+    </view>
+    <switch checked="{{isInStock}}" bindchange="onInStockChange" color="#FF6B6B" />
+  </view>
+</view>
+
+<!-- 提交按钮 -->
+<view class="submit-section">
+  <view class="submit-btn" bindtap="onSubmit">
+    <text class="submit-text">提交产品</text>
+  </view>
+</view>
+</view>
