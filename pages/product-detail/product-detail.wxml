@@ -1,57 +1,71 @@
 <view class="detail-page">
-  <!-- 产品大图 -->
-  <view class="detail-image-wrap">
-    <image class="detail-image" src="{{product.image}}" mode="aspectFill" />
-    <view class="image-badge image-badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
-    <view class="image-badge image-badge-stock" wx:if="{{!product.isInStock}}">预售</view>
+  <!-- 加载中 -->
+  <view class="detail-loading" wx:if="{{loading}}">
+    <view class="detail-spinner"></view>
+    <text>加载中...</text>
   </view>
 
-  <!-- 产品信息卡片 -->
-  <view class="detail-card">
-    <view class="detail-title">{{product.title}}</view>
-
-    <view class="detail-price-row">
-      <text class="detail-price-sign">¥</text>
-      <text class="detail-price-num">{{product.price}}</text>
-    </view>
-
-    <view class="detail-divider"></view>
-
-    <view class="detail-info-grid">
-      <view class="info-item">
-        <text class="info-label">货号</text>
-        <text class="info-value">{{product.itemNo}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">更新时间</text>
-        <text class="info-value">{{product.updateTime}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">推荐状态</text>
-        <text class="info-value {{product.isRecommend ? 'tag-rec' : ''}}">{{product.isRecommend ? '主推产品' : '常规产品'}}</text>
-      </view>
-      <view class="info-item">
-        <text class="info-label">库存状态</text>
-        <text class="info-value {{product.isInStock ? 'tag-stock' : 'tag-pre'}}">{{product.isInStock ? '现货供应' : '预售中'}}</text>
-      </view>
-    </view>
+  <!-- 加载错误 -->
+  <view class="detail-error" wx:elif="{{loadError}}">
+    <text class="error-icon">😵</text>
+    <text>加载失败，请重试</text>
   </view>
 
-  <!-- 产品描述 -->
-  <view class="detail-card">
-    <view class="section-title">产品介绍</view>
-    <view class="section-content">
-      <text>{{product.title}}，专为儿童设计的优质自行车。采用高强度轻量化车架，安全可靠，让孩子轻松学会骑行，享受户外运动的乐趣。</text>
+  <block wx:else>
+    <!-- 产品大图 -->
+    <view class="detail-image-wrap">
+      <image class="detail-image" src="{{product.image}}" mode="aspectFill" />
+      <view class="image-badge image-badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
+      <view class="image-badge image-badge-stock" wx:if="{{!product.isInStock}}">预售</view>
     </view>
-  </view>
 
-  <!-- 底部操作栏 -->
-  <view class="detail-footer">
-    <view class="footer-btn footer-btn-contact" bindtap="onContact">
-      <text>联系客服</text>
+    <!-- 产品信息卡片 -->
+    <view class="detail-card">
+      <view class="detail-title">{{product.title}}</view>
+
+      <view class="detail-price-row">
+        <text class="detail-price-sign">¥</text>
+        <text class="detail-price-num">{{product.price}}</text>
+      </view>
+
+      <view class="detail-divider"></view>
+
+      <view class="detail-info-grid">
+        <view class="info-item">
+          <text class="info-label">货号</text>
+          <text class="info-value">{{product.itemNo}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">更新时间</text>
+          <text class="info-value">{{product.updateTime}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">推荐状态</text>
+          <text class="info-value {{product.isRecommend ? 'tag-rec' : ''}}">{{product.isRecommend ? '主推产品' : '常规产品'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">库存状态</text>
+          <text class="info-value {{product.isInStock ? 'tag-stock' : 'tag-pre'}}">{{product.isInStock ? '现货供应' : '预售中'}}</text>
+        </view>
+      </view>
     </view>
-    <view class="footer-btn footer-btn-order" bindtap="onOrder">
-      <text>立即咨询</text>
+
+    <!-- 产品描述 -->
+    <view class="detail-card">
+      <view class="section-title">产品介绍</view>
+      <view class="section-content">
+        <text>{{product.title}}，专为儿童设计的优质自行车。采用高强度轻量化车架，安全可靠，让孩子轻松学会骑行，享受户外运动的乐趣。</text>
+      </view>
     </view>
-  </view>
+
+    <!-- 底部操作栏 -->
+    <view class="detail-footer">
+      <view class="footer-btn footer-btn-contact" bindtap="onContact">
+        <text>联系客服</text>
+      </view>
+      <view class="footer-btn footer-btn-order" bindtap="onOrder">
+        <text>立即咨询</text>
+      </view>
+    </view>
+  </block>
 </view>

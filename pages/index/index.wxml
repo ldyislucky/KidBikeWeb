@@ -70,7 +70,7 @@
       <text>筛选</text>
       <view class="filter-dot" wx:if="{{hasActiveFilter}}"></view>
     </view>
-    <view class="product-count">共 <text class="count-num">{{displayProducts.length}}</text> 款</view>
+    <view class="product-count">共 <text class="count-num">{{totalCount}}</text> 款</view>
   </view>
 </view>
 
@@ -131,9 +131,34 @@
   />
 </view>
 
+<!-- 加载中 -->
+<view class="loading-state" wx:if="{{loading && displayProducts.length === 0}}">
+  <view class="loading-spinner"></view>
+  <text class="loading-text">正在加载产品...</text>
+</view>
+
+<!-- 加载错误 -->
+<view class="error-state" wx:if="{{loadError && displayProducts.length === 0}}">
+  <view class="error-illustration">😵</view>
+  <text class="error-text">加载失败</text>
+  <text class="error-hint">请检查网络后重试</text>
+  <view class="retry-btn" bindtap="refreshProducts">点击重试</view>
+</view>
+
 <!-- 空状态 -->
-<view class="empty-state" wx:if="{{displayProducts.length === 0}}">
+<view class="empty-state" wx:if="{{!loading && !loadError && displayProducts.length === 0}}">
   <view class="empty-illustration">📭</view>
   <text class="empty-text">暂无相关产品</text>
   <text class="empty-hint">试试调整筛选条件或搜索关键词</text>
+</view>
+
+<!-- 列表底部提示 -->
+<view class="list-footer" wx:if="{{displayProducts.length > 0}}">
+  <view class="footer-loading" wx:if="{{loading}}">
+    <view class="footer-spinner"></view>
+    <text>加载中...</text>
+  </view>
+  <view class="footer-end" wx:elif="{{!hasMore}}">
+    <text>— 已经到底了 —</text>
+  </view>
 </view>

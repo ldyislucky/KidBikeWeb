@@ -1,0 +1,1390 @@
+openapi: "3.1.0"
+
+info:
+  title: KidBike 儿童自行车 API
+  description: |
+    KidBike 儿童自行车小程序后端 API，提供产品管理、用户认证、订单、
+    收藏、收货地址、钱包、客服等功能。
+  version: "1.0.0"
+  contact:
+    name: KidBike Team
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.kidbike.example.com/api/v1
+    description: 生产环境
+  - url: https://staging-api.kidbike.example.com/api/v1
+    description: 预发布环境
+
+tags:
+  - name: Products
+    description: 产品管理（浏览、搜索、筛选、新增、详情）
+  - name: Auth
+    description: 微信登录与用户认证
+  - name: Users
+    description: 用户个人资料
+  - name: Orders
+    description: 用户订单
+  - name: Favorites
+    description: 用户收藏
+  - name: Wallet
+    description: 用户钱包
+  - name: Addresses
+    description: 收货地址管理
+  - name: Support
+    description: 客服与帮助
+  - name: Files
+    description: 文件上传
+
+security:
+  - BearerAuth: []
+
+paths:
+
+  # ═══════════════════════════════════════════════════════════════
+  # Products
+  # ═══════════════════════════════════════════════════════════════
+
+  /products:
+    get:
+      tags: [Products]
+      summary: 获取产品列表
+      description: |
+        支持多条件筛选、排序、关键词搜索和分页。
+        筛选维度：推荐状态、库存状态、价格区间、更新时间范围。
+        排序维度：货号、更新时间、价格。
+      operationId: listProducts
+      security: []
+      parameters:
+        - name: category
+          in: query
+          description: |
+            产品分类：
+            - `all` — 所有产品（默认）
+            - `recommended` — 仅主推产品
+            - `inStock` — 仅现货产品
+          schema:
+            $ref: "#/components/schemas/ProductCategory"
+        - name: search
+          in: query
+          description: 搜索关键词，匹配产品名称和货号
+          schema:
+            type: string
+            maxLength: 100
+        - name: sortBy
+          in: query
+          description: 排序字段
+          schema:
+            $ref: "#/components/schemas/ProductSortField"
+        - name: sortOrder
+          in: query
+          description: 排序方向，默认 asc
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+        - name: priceMin
+          in: query
+          description: 最低价格（含）
+          schema:
+            type: number
+            minimum: 0
+        - name: priceMax
+          in: query
+          description: 最高价格（含）
+          schema:
+            type: number
+            minimum: 0
+        - name: timeRange
+          in: query
+          description: 更新时间范围（相对于当前时间）
+          schema:
+            $ref: "#/components/schemas/TimeRange"
+        - name: stockStatus
+          in: query
+          description: 库存状态筛选
+          schema:
+            $ref: "#/components/schemas/StockStatus"
+        - name: page
+          in: query
+          description: 页码，从 1 开始
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: 每页数量
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        "200":
+          description: 产品列表
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, pageSize, totalPages]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductCard"
+                  total:
+                    type: integer
+                    description: 符合条件的总产品数
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+
+    post:
+      tags: [Products]
+      summary: 新增产品
+      description: 发布新的自行车产品。用户认证后可用。
+      operationId: createProduct
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: 获取产品详情
+      operationId: getProduct
+      security: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: 产品详情
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      tags: [Products]
+      summary: 更新产品信息
+      operationId: updateProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdateRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [Products]
+      summary: 删除产品
+      operationId: deleteProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: 删除成功
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Auth
+  # ═══════════════════════════════════════════════════════════════
+
+  /auth/login/wechat:
+    post:
+      tags: [Auth]
+      summary: 微信登录
+      description: |
+        使用 `wx.login()` 获取的临时 code 换取服务端 JWT token。
+        首次登录自动注册用户。
+      operationId: wechatLogin
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: wx.login() 返回的临时 code
+                avatarUrl:
+                  type: string
+                  format: uri
+                  description: 用户头像 URL（getUserInfo 返回）
+                nickName:
+                  type: string
+                  description: 用户昵称（getUserInfo 返回）
+      responses:
+        "200":
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, user]
+                properties:
+                  token:
+                    type: string
+                    description: JWT Bearer token
+                  expiresIn:
+                    type: integer
+                    description: token 有效期（秒）
+                    example: 7200
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: code 无效或已过期
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Users
+  # ═══════════════════════════════════════════════════════════════
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: 获取当前用户信息
+      description: 返回已登录用户的个人资料（头像、昵称、认证状态等）
+      operationId: getCurrentUser
+      responses:
+        "200":
+          description: 用户信息
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    put:
+      tags: [Users]
+      summary: 更新当前用户信息
+      description: 修改头像或昵称
+      operationId: updateCurrentUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                avatarUrl:
+                  type: string
+                  format: uri
+                nickName:
+                  type: string
+                  maxLength: 50
+              minProperties: 1
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Orders
+  # ═══════════════════════════════════════════════════════════════
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: 获取用户订单列表
+      operationId: listOrders
+      parameters:
+        - name: status
+          in: query
+          description: 按状态筛选
+          schema:
+            $ref: "#/components/schemas/OrderStatus"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 30
+            default: 10
+      responses:
+        "200":
+          description: 订单列表
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, pageSize]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Orders]
+      summary: 创建订单
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: 获取订单详情
+      operationId: getOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: 订单详情
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Favorites
+  # ═══════════════════════════════════════════════════════════════
+
+  /favorites:
+    get:
+      tags: [Favorites]
+      summary: 获取收藏列表
+      operationId: listFavorites
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 30
+            default: 10
+      responses:
+        "200":
+          description: 收藏列表
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, pageSize]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Favorite"
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Favorites]
+      summary: 添加收藏
+      description: 将指定产品加入收藏
+      operationId: addFavorite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId]
+              properties:
+                productId:
+                  type: integer
+                  format: int64
+                  description: 要收藏的产品 ID
+      responses:
+        "201":
+          description: 收藏成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favorite"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          description: 已收藏过该产品
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /favorites/{productId}:
+    delete:
+      tags: [Favorites]
+      summary: 取消收藏
+      operationId: removeFavorite
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: 取消成功
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Wallet
+  # ═══════════════════════════════════════════════════════════════
+
+  /wallet:
+    get:
+      tags: [Wallet]
+      summary: 获取钱包信息
+      description: 返回余额和最近交易记录
+      operationId: getWallet
+      responses:
+        "200":
+          description: 钱包信息
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /wallet/transactions:
+    get:
+      tags: [Wallet]
+      summary: 获取交易明细
+      operationId: listTransactions
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        "200":
+          description: 交易列表
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, pageSize]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WalletTransaction"
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Addresses
+  # ═══════════════════════════════════════════════════════════════
+
+  /addresses:
+    get:
+      tags: [Addresses]
+      summary: 获取收货地址列表
+      operationId: listAddresses
+      responses:
+        "200":
+          description: 地址列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Address"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Addresses]
+      summary: 新增收货地址
+      operationId: createAddress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressCreateRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Address"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /addresses/{addressId}:
+    put:
+      tags: [Addresses]
+      summary: 更新收货地址
+      operationId: updateAddress
+      parameters:
+        - name: addressId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressUpdateRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Address"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [Addresses]
+      summary: 删除收货地址
+      operationId: deleteAddress
+      parameters:
+        - name: addressId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: 删除成功
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Support
+  # ═══════════════════════════════════════════════════════════════
+
+  /support/contact:
+    get:
+      tags: [Support]
+      summary: 获取客服联系方式
+      operationId: getSupportContact
+      security: []
+      responses:
+        "200":
+          description: 联系方式
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phone:
+                    type: string
+                    example: "400-123-4567"
+                  wechat:
+                    type: string
+                    example: "KidBike_CS"
+                  workHours:
+                    type: string
+                    example: "周一至周五 9:00-18:00"
+                  email:
+                    type: string
+                    format: email
+                    example: support@kidbike.example.com
+
+  /support/inquiries:
+    post:
+      tags: [Support]
+      summary: 提交咨询/反馈
+      operationId: submitInquiry
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                contact:
+                  type: string
+                  description: 联系方式（手机号或微信号）
+                content:
+                  type: string
+                  maxLength: 2000
+                  description: 咨询内容
+                productId:
+                  type: integer
+                  format: int64
+                  description: 关联的产品 ID（可选）
+      responses:
+        "201":
+          description: 提交成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                  message:
+                    type: string
+                    example: "您的咨询已提交，客服将在 24 小时内回复"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
+  /support/about:
+    get:
+      tags: [Support]
+      summary: 关于我们
+      description: 获取品牌介绍、版本号等信息
+      operationId: getAboutInfo
+      security: []
+      responses:
+        "200":
+          description: 关于信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  brand:
+                    type: string
+                    example: "KidBike 儿童自行车"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  description:
+                    type: string
+                  logo:
+                    type: string
+                    format: uri
+                  icp:
+                    type: string
+                    description: ICP 备案号
+
+  # ═══════════════════════════════════════════════════════════════
+  # Files
+  # ═══════════════════════════════════════════════════════════════
+
+  /files/upload:
+    post:
+      tags: [Files]
+      summary: 上传图片
+      description: 上传产品图片或头像，支持 jpg/png/webp，最大 5MB
+      operationId: uploadFile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 图片文件
+      responses:
+        "200":
+          description: 上传成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [url]
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: 图片访问 URL
+                  width:
+                    type: integer
+                    description: 图片宽度（像素）
+                  height:
+                    type: integer
+                    description: 图片高度（像素）
+                  size:
+                    type: integer
+                    description: 文件大小（字节）
+        "400":
+          description: 文件格式不支持或超出大小限制
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ═══════════════════════════════════════════════════════════════
+  # Health
+  # ═══════════════════════════════════════════════════════════════
+
+  /health:
+    get:
+      tags: [Products]
+      summary: 健康检查
+      operationId: healthCheck
+      security: []
+      responses:
+        "200":
+          description: 服务正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+                  timestamp:
+                    type: string
+                    format: date-time
+
+
+# ═══════════════════════════════════════════════════════════════
+# Components
+# ═══════════════════════════════════════════════════════════════
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 微信登录后获取的 JWT token。Header: `Authorization: Bearer <token>`
+
+  # ── Responses ────────────────────────────────────────────────
+
+  responses:
+    Unauthorized:
+      description: 未认证或 token 已过期
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ValidationError:
+      description: 参数校验失败
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  # ── Schemas ──────────────────────────────────────────────────
+
+  schemas:
+
+    # ─── 枚举 ───────────────────────────────────────────────────
+
+    ProductCategory:
+      type: string
+      enum: [all, recommended, inStock]
+      default: all
+
+    ProductSortField:
+      type: string
+      enum: [itemNo, updateTime, price]
+      default: updateTime
+
+    SortOrder:
+      type: string
+      enum: [asc, desc]
+      default: asc
+
+    TimeRange:
+      type: string
+      enum: ["", "3m", "6m", "1y"]
+      description: |
+        空字符串 = 不限，
+        `3m` = 近3个月，
+        `6m` = 近6个月，
+        `1y` = 近1年
+
+    StockStatus:
+      type: string
+      enum: ["", inStock, preOrder]
+      description: |
+        空字符串 = 全部，
+        `inStock` = 仅现货，
+        `preOrder` = 仅预售
+
+    OrderStatus:
+      type: string
+      enum: [pending, confirmed, shipped, delivered, cancelled]
+      description: |
+        `pending` — 待确认
+        `confirmed` — 已确认
+        `shipped` — 已发货
+        `delivered` — 已送达
+        `cancelled` — 已取消
+
+    # ─── 产品 ───────────────────────────────────────────────────
+
+    Product:
+      type: object
+      required:
+        - id
+        - title
+        - itemNo
+        - price
+        - updateTime
+        - isRecommend
+        - isInStock
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 产品唯一 ID
+          example: 1
+        title:
+          type: string
+          description: 产品名称
+          example: "闪电儿童山地自行车"
+          maxLength: 100
+        itemNo:
+          type: string
+          description: 货号
+          example: "BK-001"
+          maxLength: 50
+        price:
+          type: number
+          description: 价格（元）
+          example: 568
+          minimum: 0
+        image:
+          type: string
+          format: uri
+          description: 产品主图 URL
+          nullable: true
+        images:
+          type: array
+          description: 产品多图（详情页轮播）
+          items:
+            type: string
+            format: uri
+        description:
+          type: string
+          description: 产品详细描述
+          maxLength: 5000
+        isRecommend:
+          type: boolean
+          description: 是否主推产品（显示推荐标签）
+          default: false
+        isInStock:
+          type: boolean
+          description: 是否有现货（false 即为预售）
+          default: true
+        updateTime:
+          type: string
+          format: date
+          description: 产品更新日期
+          example: "2026-04-20"
+        categoryId:
+          type: integer
+          format: int64
+          description: 所属分类 ID（预留扩展）
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+        updatedAt:
+          type: string
+          format: date-time
+          description: 最后更新时间
+
+    ProductCard:
+      type: object
+      required:
+        - id
+        - title
+        - price
+        - isRecommend
+        - isInStock
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+          format: uri
+          nullable: true
+        isRecommend:
+          type: boolean
+        isInStock:
+          type: boolean
+
+    ProductCreateRequest:
+      type: object
+      required: [title, itemNo, price]
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          example: "闪电儿童山地自行车"
+        itemNo:
+          type: string
+          maxLength: 50
+          example: "BK-009"
+        price:
+          type: number
+          exclusiveMinimum: 0
+          example: 568
+        image:
+          type: string
+          format: uri
+          description: 通过 /files/upload 上传后获得的图片 URL
+        description:
+          type: string
+          maxLength: 5000
+        isRecommend:
+          type: boolean
+          default: false
+        isInStock:
+          type: boolean
+          default: true
+
+    ProductUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        title:
+          type: string
+          maxLength: 100
+        itemNo:
+          type: string
+          maxLength: 50
+        price:
+          type: number
+          exclusiveMinimum: 0
+        image:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 5000
+        isRecommend:
+          type: boolean
+        isInStock:
+          type: boolean
+
+    # ─── 用户 ───────────────────────────────────────────────────
+
+    User:
+      type: object
+      required: [id, nickName, isLogin, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        openId:
+          type: string
+          description: 微信 OpenID（仅服务端可见，不返回前端）
+        nickName:
+          type: string
+          example: "童车客户"
+          maxLength: 50
+        avatarUrl:
+          type: string
+          format: uri
+          description: 头像 URL
+          nullable: true
+        isLogin:
+          type: boolean
+          description: 是否已认证（绑定微信）
+        createdAt:
+          type: string
+          format: date-time
+
+    # ─── 订单 ───────────────────────────────────────────────────
+
+    Order:
+      type: object
+      required: [id, productId, quantity, status, totalAmount, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        product:
+          $ref: "#/components/schemas/ProductCard"
+          description: 关联产品快照（列表接口可展开）
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        totalAmount:
+          type: number
+          description: 订单总金额
+        address:
+          $ref: "#/components/schemas/Address"
+          description: 收货地址快照
+        remark:
+          type: string
+          description: 用户备注
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OrderCreateRequest:
+      type: object
+      required: [productId, addressId]
+      properties:
+        productId:
+          type: integer
+          format: int64
+        addressId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+        remark:
+          type: string
+          maxLength: 200
+
+    # ─── 收藏 ───────────────────────────────────────────────────
+
+    Favorite:
+      type: object
+      required: [id, productId, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        productId:
+          type: integer
+          format: int64
+        product:
+          $ref: "#/components/schemas/ProductCard"
+          description: 关联产品快照
+        createdAt:
+          type: string
+          format: date-time
+
+    # ─── 钱包 ───────────────────────────────────────────────────
+
+    Wallet:
+      type: object
+      required: [balance, totalRecharged, totalSpent]
+      properties:
+        balance:
+          type: number
+          description: 当前余额
+          example: 1280.50
+        totalRecharged:
+          type: number
+          description: 累计充值
+          example: 5000.00
+        totalSpent:
+          type: number
+          description: 累计消费
+          example: 3719.50
+        recentTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/WalletTransaction"
+          description: 最近 5 笔交易
+
+    WalletTransaction:
+      type: object
+      required: [id, type, amount, balanceAfter, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum: [recharge, payment, refund]
+          description: |
+            `recharge` — 充值
+            `payment` — 消费
+            `refund` — 退款
+        amount:
+          type: number
+          description: 金额（充值和退款为正，消费为负）
+        balanceAfter:
+          type: number
+          description: 交易后余额
+        orderId:
+          type: integer
+          format: int64
+          description: 关联订单 ID（消费时）
+          nullable: true
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    # ─── 地址 ───────────────────────────────────────────────────
+
+    Address:
+      type: object
+      required: [id, name, phone, province, city, district, detail, isDefault]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          description: 收货人姓名
+          maxLength: 30
+        phone:
+          type: string
+          description: 收货人手机号
+          pattern: "^1[3-9]\\d{9}$"
+          example: "13800138000"
+        province:
+          type: string
+          description: 省份
+        city:
+          type: string
+          description: 城市
+        district:
+          type: string
+          description: 区/县
+        detail:
+          type: string
+          description: 详细地址
+          maxLength: 200
+        isDefault:
+          type: boolean
+          description: 是否默认地址
+          default: false
+
+    AddressCreateRequest:
+      type: object
+      required: [name, phone, province, city, district, detail]
+      properties:
+        name:
+          type: string
+          maxLength: 30
+        phone:
+          type: string
+          pattern: "^1[3-9]\\d{9}$"
+        province:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        detail:
+          type: string
+          maxLength: 200
+        isDefault:
+          type: boolean
+          default: false
+
+    AddressUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          maxLength: 30
+        phone:
+          type: string
+          pattern: "^1[3-9]\\d{9}$"
+        province:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        detail:
+          type: string
+          maxLength: 200
+        isDefault:
+          type: boolean
+
+    # ─── 通用 ───────────────────────────────────────────────────
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: integer
+          description: 业务错误码
+          example: 40001
+        message:
+          type: string
+          description: 人类可读的错误描述
+          example: "产品名称不能为空"
+        details:
+          type: array
+          description: 字段级校验错误（仅 422 时返回）
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string

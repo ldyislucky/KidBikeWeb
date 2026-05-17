@@ -1,3 +1,5 @@
+const api = require('../../utils/api');
+
 Page({
   data: {
     searchValue: '',
@@ -38,37 +40,161 @@ Page({
       { label: '预售', value: 'preOrder' }
     ],
 
-    allProducts: [
-      { id: 1, title: '闪电儿童山地自行车', itemNo: 'BK-001', updateTime: '2026-04-20', price: 568, isRecommend: true, isInStock: true, image: '' },
-      { id: 2, title: '小飞侠儿童平衡车', itemNo: 'BK-002', updateTime: '2026-04-18', price: 328, isRecommend: true, isInStock: true, image: '' },
-      { id: 3, title: '炫彩儿童折叠自行车 12寸', itemNo: 'BK-003', updateTime: '2026-04-15', price: 456, isRecommend: true, isInStock: true, image: '' },
-      { id: 4, title: '恐龙宝宝三轮脚踏车', itemNo: 'BK-004', updateTime: '2026-03-28', price: 198, isRecommend: true, isInStock: true, image: '' },
-      { id: 5, title: '极速少年变速山地车 18速', itemNo: 'BK-005', updateTime: '2026-03-10', price: 788, isRecommend: true, isInStock: true, image: '' },
-      { id: 6, title: '公主款儿童自行车 14寸', itemNo: 'BK-006', updateTime: '2026-02-22', price: 438, isRecommend: true, isInStock: true, image: '' },
-      { id: 7, title: '铝合金儿童越野自行车', itemNo: 'BK-007', updateTime: '2026-01-15', price: 658, isRecommend: false, isInStock: true, image: '' },
-      { id: 8, title: '新款儿童滑步车 轻量款', itemNo: 'BK-008', updateTime: '2025-12-08', price: 268, isRecommend: false, isInStock: false, image: '' }
-    ],
     displayProducts: [],
-    totalCount: 2488
+    totalCount: 0,
+
+    page: 1,
+    pageSize: 20,
+    hasMore: true,
+    loading: false,
+    loadError: false,
+    searchTimer: null
   },
 
   onLoad() {
-    this.loadProducts();
-    this.filterProducts();
+    console.log('fetchProducts called执行');
+    this.fetchProducts();
   },
 
-  loadProducts() {
-    let storedProducts = [];
-    try {
-      storedProducts = wx.getStorageSync('products') || [];
-    } catch (e) {
-      storedProducts = [];
+  onShow() {
+    // 从详情页返回时可刷新列表
+  },
+
+  onPullDownRefresh() {
+    console.log('onPullDownRefresh 执行');
+    this.setData({ page: 1, hasMore: true });
+    this.fetchProducts().then(() => {
+      wx.stopPullDownRefresh();
+    });
+  },
+
+  onReachBottom() {
+    console.log('onReachBottom called执行');
+    if (this.data.hasMore && !this.data.loading) {
+      this.loadMore();
     }
-    if (storedProducts.length > 0) {
+  },
+
+  /** 构建 API 查询参数 */
+  buildQueryParams() {
+    const { activeCategory, searchValue, sortType, sortAsc,
+            filterPriceRange, filterTimeRange, filterStockStatus,
+            page, pageSize } = this.data;
+
+    const categoryMap = { 0: 'all', 1: 'recommended', 2: 'inStock' };
+    const sortByMap = { 0: 'itemNo', 1: 'updateTime', 2: 'price' };
+
+    const params = {
+      category: categoryMap[activeCategory] || 'all',
+      sortBy: sortByMap[sortType] || 'updateTime',
+      sortOrder: sortAsc ? 'asc' : 'desc',
+      page: page,
+      pageSize: pageSize
+    };
+
+    const kw = searchValue.trim();
+    if (kw) {
+      params.search = kw;
+    }
+
+    if (filterPriceRange === '0-300') {
+      params.priceMin = 0;
+      params.priceMax = 300;
+    } else if (filterPriceRange === '300-600') {
+      params.priceMin = 300;
+      params.priceMax = 600;
+    } else if (filterPriceRange === '600+') {
+      params.priceMin = 600;
+    }
+
+    if (filterTimeRange) {
+      params.timeRange = filterTimeRange;
+    }
+
+    if (filterStockStatus) {
+      params.stockStatus = filterStockStatus;
+    }
+
+    return params;
+  },
+
+  /** 请求产品列表（首页 / 刷新） */
+  fetchProducts() {
+    console.log('fetchProducts正式执行'); 
+    const params = this.buildQueryParams();
+    this.setData({ loading: true, loadError: false });
+
+    return api.getProducts(params).then(res => {
+      console.log('相应信息！！！'); 
+      console.log(res);
+      const items = this.extractItems(res);
+      const total = res.total !== undefined ? res.total : items.length;
+      const hasMore = items.length >= this.data.pageSize &&
+                      this.data.displayProducts.length + items.length < total;
+
+      console.log('items信息',items);
+
       this.setData({
-        allProducts: [...storedProducts, ...this.data.allProducts]
+        displayProducts: items,
+        totalCount: total,
+        hasMore: hasMore,
+        loading: false,
+        loadError: false
       });
-    }
+      console.log('产品信息：',this.data.displayProducts); 
+    }).catch(err => {
+      console.error('获取产品列表失败', err);
+      this.setData({ loading: false, loadError: true });
+    });
+  },
+
+  /** 加载更多 */
+  loadMore() {
+    if (!this.data.hasMore || this.data.loading) return;
+
+    const page = this.data.page + 1;
+    this.setData({ page: page, loading: true });
+
+    const params = this.buildQueryParams();
+    params.page = page;
+
+    return api.getProducts(params).then(res => {
+      console.log('完整相应',res);
+      const items = this.extractItems(res);
+      const total = res.total !== undefined ? res.total : this.data.totalCount;
+      const newProducts = [...this.data.displayProducts, ...items];
+      const hasMore = items.length >= this.data.pageSize &&
+                      newProducts.length < total;
+
+      this.setData({
+        displayProducts: newProducts,
+        totalCount: total,
+        hasMore: hasMore,
+        loading: false
+      });
+    }).catch(err => {
+      console.error('加载更多失败', err);
+      this.setData({ page: page - 1, loading: false });
+    });
+  },
+
+  /** 从响应中提取产品数组 */
+  extractItems(res) {
+    
+    console.log('res.data信息', res.data);
+    console.log('res.data.items信息', res.data.items);
+    
+    if (Array.isArray(res)) return res;
+    // 新增：处理 { data: { items: [...] } } 结构
+    if (res && Array.isArray(res.data)) return res.data;
+    if (res && res.data && Array.isArray(res.data.items)) return res.data.items;
+    return [];
+  },
+
+  /** 重置并重新查询 */
+  refreshProducts() {
+    this.setData({ page: 1, hasMore: true, displayProducts: [] });
+    this.fetchProducts();
   },
 
   onCategoryTap(e) {
@@ -78,7 +204,7 @@ Page({
       active: cat.id === id
     }));
     this.setData({ categories, activeCategory: id });
-    this.filterProducts();
+    this.refreshProducts();
   },
 
   onSortTap(e) {
@@ -88,7 +214,7 @@ Page({
     } else {
       this.setData({ sortType: type, sortAsc: true });
     }
-    this.filterProducts();
+    this.refreshProducts();
   },
 
   onFilterTap() {
@@ -113,7 +239,7 @@ Page({
       filterStockStatus: '',
       hasActiveFilter: false
     });
-    this.filterProducts();
+    this.refreshProducts();
     this.setData({ showFilterPanel: false });
   },
 
@@ -122,88 +248,21 @@ Page({
                       this.data.filterTimeRange !== '' ||
                       this.data.filterStockStatus !== '';
     this.setData({ hasActiveFilter: hasActive, showFilterPanel: false });
-    this.filterProducts();
+    this.refreshProducts();
   },
 
   onSearchInput(e) {
     this.setData({ searchValue: e.detail.value });
-    this.filterProducts();
-  },
 
-  filterProducts() {
-    let products = [...this.data.allProducts];
-    const { activeCategory, searchValue, sortType, sortAsc,
-            filterPriceRange, filterTimeRange, filterStockStatus } = this.data;
-    const kw = searchValue.trim().toLowerCase();
-
-    if (activeCategory === 1) {
-      products = products.filter(p => p.isRecommend);
-    } else if (activeCategory === 2) {
-      products = products.filter(p => p.isInStock);
+    if (this.data.searchTimer) {
+      clearTimeout(this.data.searchTimer);
     }
-
-    if (kw) {
-      products = products.filter(p =>
-        p.title.toLowerCase().includes(kw) ||
-        p.itemNo.toLowerCase().includes(kw)
-      );
-    }
-
-    if (filterPriceRange) {
-      products = products.filter(p => {
-        const price = p.price;
-        if (filterPriceRange === '0-300') return price >= 0 && price <= 300;
-        if (filterPriceRange === '300-600') return price > 300 && price <= 600;
-        if (filterPriceRange === '600+') return price > 600;
-        return true;
-      });
-    }
-
-    if (filterTimeRange) {
-      const now = Date.now();
-      const msPerDay = 86400000;
-      products = products.filter(p => {
-        const productTime = new Date(p.updateTime).getTime();
-        const diffDays = (now - productTime) / msPerDay;
-        if (filterTimeRange === '3m') return diffDays <= 90;
-        if (filterTimeRange === '6m') return diffDays <= 180;
-        if (filterTimeRange === '1y') return diffDays <= 365;
-        return true;
-      });
-    }
-
-    if (filterStockStatus) {
-      products = products.filter(p => {
-        if (filterStockStatus === 'inStock') return p.isInStock === true;
-        if (filterStockStatus === 'preOrder') return p.isInStock !== true;
-        return true;
-      });
-    }
-
-    if (sortType === 0) {
-      products.sort((a, b) =>
-        sortAsc ? a.itemNo.localeCompare(b.itemNo) : b.itemNo.localeCompare(a.itemNo));
-    } else if (sortType === 1) {
-      products.sort((a, b) =>
-        sortAsc ? new Date(a.updateTime) - new Date(b.updateTime)
-                : new Date(b.updateTime) - new Date(a.updateTime));
-    } else if (sortType === 2) {
-      products.sort((a, b) =>
-        sortAsc ? a.price - b.price : b.price - a.price);
-    }
-
-    this.setData({
-      displayProducts: products,
-      totalCount: products.length
-    });
+    this.data.searchTimer = setTimeout(() => {
+      this.refreshProducts();
+    }, 400);
   },
 
   onProductTap(e) {
-    const app = getApp();
-    const product = this.data.allProducts.find(p => p.id === e.detail.id);
-    if (product) {
-      app.globalData.currentProduct = product;
-      wx.navigateTo({ url: '/pages/product-detail/product-detail' });
-    }
+    wx.navigateTo({ url: `/pages/product-detail/product-detail?id=${e.detail.id}` });
   }
 });
