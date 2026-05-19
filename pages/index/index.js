@@ -68,6 +68,10 @@ Page({
     });
   },
 
+  onTabItemTap() {
+    wx.pageScrollTo({ scrollTop: 0, duration: 300 });
+  },
+
   onReachBottom() {
     console.log('onReachBottom called执行');
     if (this.data.hasMore && !this.data.loading) {
