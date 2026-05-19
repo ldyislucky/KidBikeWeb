@@ -120,28 +120,20 @@ Page({
 
   /** 请求产品列表（首页 / 刷新） */
   fetchProducts() {
-    console.log('fetchProducts正式执行'); 
     const params = this.buildQueryParams();
     this.setData({ loading: true, loadError: false });
 
     return api.getProducts(params).then(res => {
-      console.log('相应信息！！！'); 
-      console.log(res);
-      const items = this.extractItems(res);
-      const total = res.total !== undefined ? res.total : items.length;
-      const hasMore = items.length >= this.data.pageSize &&
-                      this.data.displayProducts.length + items.length < total;
-
-      console.log('items信息',items);
+      const { items, total } = this.extractResponse(res);
+      const hasMore = items.length >= this.data.pageSize && items.length < total;
 
       this.setData({
         displayProducts: items,
         totalCount: total,
-        hasMore: hasMore,
+        hasMore,
         loading: false,
         loadError: false
       });
-      console.log('产品信息：',this.data.displayProducts); 
     }).catch(err => {
       console.error('获取产品列表失败', err);
       this.setData({ loading: false, loadError: true });
@@ -153,23 +145,19 @@ Page({
     if (!this.data.hasMore || this.data.loading) return;
 
     const page = this.data.page + 1;
-    this.setData({ page: page, loading: true });
+    this.setData({ page, loading: true });
 
     const params = this.buildQueryParams();
-    params.page = page;
 
     return api.getProducts(params).then(res => {
-      console.log('完整相应',res);
-      const items = this.extractItems(res);
-      const total = res.total !== undefined ? res.total : this.data.totalCount;
+      const { items, total } = this.extractResponse(res);
       const newProducts = [...this.data.displayProducts, ...items];
-      const hasMore = items.length >= this.data.pageSize &&
-                      newProducts.length < total;
+      const hasMore = items.length >= this.data.pageSize && newProducts.length < total;
 
       this.setData({
         displayProducts: newProducts,
         totalCount: total,
-        hasMore: hasMore,
+        hasMore,
         loading: false
       });
     }).catch(err => {
@@ -178,17 +166,21 @@ Page({
     });
   },
 
-  /** 从响应中提取产品数组 */
-  extractItems(res) {
-    
-    console.log('res.data信息', res.data);
-    console.log('res.data.items信息', res.data.items);
-    
-    if (Array.isArray(res)) return res;
-    // 新增：处理 { data: { items: [...] } } 结构
-    if (res && Array.isArray(res.data)) return res.data;
-    if (res && res.data && Array.isArray(res.data.items)) return res.data.items;
-    return [];
+  /** 从响应中提取产品数组和总数 */
+  extractResponse(res) {
+    if (Array.isArray(res)) {
+      return { items: res, total: res.length };
+    }
+    const data = res && res.data;
+    if (data) {
+      if (Array.isArray(data)) {
+        return { items: data, total: res.total != null ? res.total : data.length };
+      }
+      if (Array.isArray(data.items)) {
+        return { items: data.items, total: data.total != null ? data.total : data.items.length };
+      }
+    }
+    return { items: [], total: 0 };
   },
 
   /** 重置并重新查询 */
