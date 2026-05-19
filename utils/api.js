@@ -1,15 +1,18 @@
 const BASE_URL = 'http://127.0.0.1:8000';
 
+const getToken = () => wx.getStorageSync('token') || '';
+
 const request = (url, options = {}) => {
   return new Promise((resolve, reject) => {
+    const token = getToken();
+    const header = { 'Content-Type': 'application/json', ...options.header };
+    if (token) header['Authorization'] = `Bearer ${token}`;
+
     wx.request({
       url: BASE_URL + url,
       method: options.method || 'GET',
       data: options.data || {},
-      header: {
-        'Content-Type': 'application/json',
-        ...options.header
-      },
+      header,
       success(res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
@@ -24,35 +27,179 @@ const request = (url, options = {}) => {
   });
 };
 
-/**
- * 查询产品列表
- * @param {Object} params
- * @param {string} params.category    - all / recommended / inStock
- * @param {string} params.search      - 搜索关键词
- * @param {string} params.sortBy      - itemNo / updateTime / price
- * @param {string} params.sortOrder   - asc / desc
- * @param {number} params.priceMin    - 最低价格
- * @param {number} params.priceMax    - 最高价格
- * @param {string} params.timeRange   - 3m / 6m / 1y
- * @param {string} params.stockStatus - inStock / preOrder
- * @param {number} params.page        - 页码，默认 1
- * @param {number} params.pageSize    - 每页数量，默认 20
- */
+// ==================== Products ====================
+
 const getProducts = (params = {}) => {
-  console.log('产品列表查询请求发送');
   return request('/api/v1/products', { data: params });
 };
 
-/**
- * 查询单个产品详情
- */
 const getProduct = (id) => {
-  console.log('单个产品请求发送');
   return request(`/api/v1/products/${id}`);
+};
+
+const createProduct = (data) => {
+  return request('/api/v1/products', { method: 'POST', data });
+};
+
+const updateProduct = (id, data) => {
+  return request(`/api/v1/products/${id}`, { method: 'PUT', data });
+};
+
+const deleteProduct = (id) => {
+  return request(`/api/v1/products/${id}`, { method: 'DELETE' });
+};
+
+// ==================== Auth ====================
+
+const wechatLogin = (code, avatarUrl, nickName) => {
+  const data = { code };
+  if (avatarUrl) data.avatarUrl = avatarUrl;
+  if (nickName) data.nickName = nickName;
+  return request('/api/v1/auth/login/wechat', { method: 'POST', data });
+};
+
+// ==================== Users ====================
+
+const getUserInfo = () => {
+  return request('/api/v1/users/me');
+};
+
+const updateUserInfo = (data) => {
+  return request('/api/v1/users/me', { method: 'PUT', data });
+};
+
+// ==================== Orders ====================
+
+const getOrders = (params = {}) => {
+  return request('/api/v1/orders', { data: params });
+};
+
+const createOrder = (data) => {
+  return request('/api/v1/orders', { method: 'POST', data });
+};
+
+const getOrder = (id) => {
+  return request(`/api/v1/orders/${id}`);
+};
+
+// ==================== Favorites ====================
+
+const getFavorites = (params = {}) => {
+  return request('/api/v1/favorites', { data: params });
+};
+
+const addFavorite = (productId) => {
+  return request('/api/v1/favorites', { method: 'POST', data: { productId } });
+};
+
+const removeFavorite = (productId) => {
+  return request(`/api/v1/favorites/${productId}`, { method: 'DELETE' });
+};
+
+// ==================== Wallet ====================
+
+const getWallet = () => {
+  return request('/api/v1/wallet');
+};
+
+const getTransactions = (params = {}) => {
+  return request('/api/v1/wallet/transactions', { data: params });
+};
+
+// ==================== Addresses ====================
+
+const getAddresses = () => {
+  return request('/api/v1/addresses');
+};
+
+const createAddress = (data) => {
+  return request('/api/v1/addresses', { method: 'POST', data });
+};
+
+const updateAddress = (id, data) => {
+  return request(`/api/v1/addresses/${id}`, { method: 'PUT', data });
+};
+
+const deleteAddress = (id) => {
+  return request(`/api/v1/addresses/${id}`, { method: 'DELETE' });
+};
+
+// ==================== Support ====================
+
+const getSupportContact = () => {
+  return request('/api/v1/support/contact');
+};
+
+const submitInquiry = (data) => {
+  return request('/api/v1/support/inquiries', { method: 'POST', data });
+};
+
+const getAboutInfo = () => {
+  return request('/api/v1/support/about');
+};
+
+// ==================== Files ====================
+
+const uploadFile = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const token = getToken();
+    const header = {};
+    if (token) header['Authorization'] = `Bearer ${token}`;
+
+    wx.uploadFile({
+      url: BASE_URL + '/api/v1/files/upload',
+      filePath,
+      name: 'file',
+      header,
+      success(res) {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(JSON.parse(res.data));
+          } catch (e) {
+            resolve(res.data);
+          }
+        } else {
+          reject(res);
+        }
+      },
+      fail(err) {
+        reject(err);
+      }
+    });
+  });
+};
+
+// ==================== Health ====================
+
+const healthCheck = () => {
+  return request('/api/v1/health');
 };
 
 module.exports = {
   BASE_URL,
   getProducts,
-  getProduct
+  getProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  wechatLogin,
+  getUserInfo,
+  updateUserInfo,
+  getOrders,
+  createOrder,
+  getOrder,
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+  getWallet,
+  getTransactions,
+  getAddresses,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  getSupportContact,
+  submitInquiry,
+  getAboutInfo,
+  uploadFile,
+  healthCheck
 };

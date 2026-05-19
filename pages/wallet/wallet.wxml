@@ -1,0 +1,55 @@
+<view class="page-container">
+  <!-- 钱包卡片 -->
+  <view class="wallet-card" wx:if="{{wallet}}">
+    <view class="wallet-bg"></view>
+    <view class="wallet-content">
+      <text class="wallet-label">账户余额</text>
+      <view class="wallet-balance">
+        <text class="balance-sign">¥</text>
+        <text class="balance-num">{{wallet.balance || 0}}</text>
+      </view>
+      <text class="wallet-hint">KidBike 儿童自行车钱包</text>
+    </view>
+  </view>
+
+  <!-- 加载错误 -->
+  <view class="center-state" wx:if="{{loadError && !wallet}}">
+    <text class="error-icon">😵</text>
+    <text>加载失败</text>
+    <view class="retry-btn" bindtap="fetchWallet">重试</view>
+  </view>
+
+  <!-- 交易记录 -->
+  <view class="section-title">交易记录</view>
+
+  <view class="center-state" wx:if="{{txLoading && transactions.length === 0}}">
+    <view class="spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <view class="center-state" wx:elif="{{!txLoading && transactions.length === 0}}">
+    <text class="empty-icon">📋</text>
+    <text>暂无交易记录</text>
+  </view>
+
+  <view class="tx-list" wx:else>
+    <view
+      wx:for="{{transactions}}"
+      wx:key="id"
+      class="tx-item"
+    >
+      <view class="tx-left">
+        <text class="tx-desc">{{item.description || item.type || '交易'}}</text>
+        <text class="tx-time">{{item.createTime || item.createdAt || ''}}</text>
+      </view>
+      <text class="tx-amount {{item.amount >= 0 ? 'tx-plus' : 'tx-minus'}}">
+        {{item.amount >= 0 ? '+' : ''}}¥{{item.amount}}
+      </text>
+    </view>
+  </view>
+
+  <view class="list-footer" wx:if="{{transactions.length > 0}}">
+    <text wx:if="{{txLoading}}">加载中...</text>
+    <text wx:elif="{{!hasMore}}">— 已经到底了 —</text>
+  </view>
+</view>

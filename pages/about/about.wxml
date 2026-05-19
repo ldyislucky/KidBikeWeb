@@ -1,0 +1,49 @@
+<view class="page-container">
+  <!-- 加载中 -->
+  <view class="center-state" wx:if="{{loading}}">
+    <view class="spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 加载错误 -->
+  <view class="center-state" wx:elif="{{loadError}}">
+    <text class="error-icon">😵</text>
+    <text>加载失败</text>
+    <view class="retry-btn" bindtap="fetchAbout">重试</view>
+  </view>
+
+  <!-- 关于内容 -->
+  <view class="about-content" wx:else>
+    <view class="about-logo">🚲</view>
+    <text class="about-brand">KidBike 儿童自行车</text>
+    <text class="about-ver">v1.0.0</text>
+
+    <view class="about-card" wx:if="{{about}}">
+      <view class="about-text" wx:if="{{about.description || about.content}}">
+        {{about.description || about.content}}
+      </view>
+      <view class="about-info-grid" wx:if="{{about.company || about.contact}}">
+        <view class="about-info-item" wx:if="{{about.company}}">
+          <text class="info-label">公司名称</text>
+          <text class="info-value">{{about.company}}</text>
+        </view>
+        <view class="about-info-item" wx:if="{{about.contact}}">
+          <text class="info-label">联系方式</text>
+          <text class="info-value">{{about.contact}}</text>
+        </view>
+        <view class="about-info-item" wx:if="{{about.email}}">
+          <text class="info-label">电子邮箱</text>
+          <text class="info-value">{{about.email}}</text>
+        </view>
+        <view class="about-info-item" wx:if="{{about.address}}">
+          <text class="info-label">公司地址</text>
+          <text class="info-value">{{about.address}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="about-card" wx:else>
+      <text class="about-text">KidBike 致力于为孩子们提供最优质的自行车产品，让每一个孩子都能享受骑行的乐趣。我们专注于儿童自行车的设计、制造和销售，以安全、舒适、环保为核心理念。</text>
+    </view>
+  </view>
+</view>

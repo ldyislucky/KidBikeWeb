@@ -1,139 +1,104 @@
+/* 商品卡片容器 - 整体白色卡片风格 */
 .product-card {
-  /* 卡片占父容器宽度的一半，减去10rpx用于留出左右间距，实现两列自适应布局 */
-  width: calc(50% - 10rpx);
-  /* 白色背景，使卡片在浅色页面中清晰可见 */
-  background: #fff;
-  /* 圆角，柔化卡片边缘，提升亲和力 */
-  border-radius: 20rpx;
-  /* 卡片之间的垂直外间距 */
-  margin-bottom: 20rpx;
-  /* 隐藏超出圆角边界的内容，例如图片或标签溢出的部分 */
-  overflow: hidden;
-  /* 轻微阴影，增强卡片的层次感和立体感，阴影颜色与主题色呼应 */
-  box-shadow: 0 4rpx 16rpx rgba(255, 107, 107, 0.06);
-  /* 添加过渡动画，使按压或悬停时变化更平滑 */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  border-radius: 24rpx;          /* 圆润的圆角 */
+  overflow: hidden;               /* 保证圆角裁剪子元素 */
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05); /* 轻微阴影增加立体感 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* 点击微动效 */
+  margin: 0 0 16rpx 0;           /* 底部间距，配合父级网格也可 */
 }
 
-/* 图片区 — 4:3 比例 (注：此处padding-bottom为120%实际对应宽高比5:6，常用于营造纵向视觉空间) */
+/* 可选：添加按压效果（需配合 bindtap 模拟，仅样式预留） */
+.product-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 图片外层容器 */
 .card-img-wrap {
-  /* 相对定位，作为内部绝对定位图片的定位参照容器 */
-  position: relative;
-  /* 宽度占满父容器 */
+  position: relative;             /* 为徽章定位提供参照 */
   width: 100%;
-  /* 通过百分比撑开高度，实现固定宽高比容器：高度 = 父容器宽度 × 120% */
-  padding-bottom: 120%;
-  /* 隐藏图片可能超出的部分，保证圆角等效果不被破坏 */
+  padding-bottom: 100%;           /* 1:1 正方形比例，可根据需求改为 75% (4:3) */
   overflow: hidden;
-  /* 渐变背景作为图片未加载或透明时的占位底图，保持视觉统一 */
-  background: linear-gradient(135deg, #FFF0EC, #FFE8E0);
+  background-color: #f5f5f5;      /* 图片占位背景色 */
 }
 
+/* 商品图片 */
 .card-img {
-  /* 绝对定位，脱离文档流并完全覆盖父容器 */
-  position: absolute;
+  position: absolute;             /* 绝对定位填满父容器 */
   top: 0;
   left: 0;
-  /* 宽度和高度均撑满父容器，使图片自适应覆盖 */
   width: 100%;
   height: 100%;
+  object-fit: cover;              /* 保证图片覆盖容器，与 mode="aspectFill" 一致 */
 }
 
-/* 推荐标签 - 位于图片左上角的角标 */
-.badge-rec {
-  /* 绝对定位，相对于 .card-img-wrap 进行定位 */
+/* 通用徽章样式 */
+.badge {
   position: absolute;
-  top: 0;
-  left: 0;
-  /* 渐变色背景，突出显示 */
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
-  /* 白色文字，与背景形成高对比度 */
-  color: #fff;
-  /* 小号字体 */
-  font-size: 20rpx;
-  /* 加粗，强化标签 */
-  font-weight: 600;
-  /* 内边距让标签文字不紧贴边缘 */
-  padding: 6rpx 18rpx;
-  /* 右下角圆角，形成独特的折角标签感 */
-  border-bottom-right-radius: 14rpx;
-  /* 提升层级，确保在图片之上 */
-  z-index: 2;
-  /* 为标签添加微阴影，增强立体感 */
-  box-shadow: 2rpx 2rpx 6rpx rgba(255, 107, 107, 0.3);
-}
-
-/* 预售/库存标签 - 悬浮于图片右上角 */
-.badge-stock {
-  position: absolute;
-  /* 与顶部和右侧保持一定距离，避免贴边 */
   top: 16rpx;
-  right: 16rpx;
-  /* 标签内边距 */
-  padding: 4rpx 16rpx;
-  /* 胶囊型圆角 */
-  border-radius: 24rpx;
-  /* 半透明橙黄背景，既能提示信息，又不过度遮挡图片 */
-  background: rgba(255, 177, 66, 0.92);
-  color: #fff;
-  font-size: 20rpx;
-  font-weight: 600;
-  /* 保证在图片之上显示 */
-  z-index: 2;
+  left: 16rpx;
+  padding: 6rpx 16rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #ffffff;
+  border-radius: 32rpx;           /* 胶囊形状 */
+  backdrop-filter: blur(8rpx);    /* 毛玻璃效果（可选） */
 }
 
-/* 卡片底部信息区 */
+/* 推荐徽章 */
+.badge-rec {
+  background: linear-gradient(135deg, #ff9a3c, #ff6a00); /* 橙红渐变 */
+  box-shadow: 0 2rpx 6rpx rgba(255, 106, 0, 0.3);
+}
+
+/* 预售徽章 */
+.badge-stock {
+  background: linear-gradient(135deg, #6c5ce7, #4a3bb5);
+  box-shadow: 0 2rpx 6rpx rgba(108, 92, 231, 0.3);
+}
+
+/* 卡片内容区域 */
 .card-body {
-  /* 内边距，让内容与卡片边缘保持舒适距离 */
-  padding: 16rpx 16rpx 20rpx;
-  /* 使用弹性盒布局，便于控制内部元素排列 */
+  padding: 24rpx 20rpx 28rpx;
   display: flex;
   flex-direction: column;
-  /* 设置各子元素之间的间距，无需额外写 margin */
-  gap: 10rpx;
+  gap: 12rpx;
 }
 
 /* 商品标题 */
 .card-title {
-  /* 宽度撑满，以正确触发多行截断 */
-  width: 100%;
-  /* 标题字号，清晰可读 */
-  font-size: 28rpx;
-  /* 加粗突出 */
-  font-weight: 600;
-  /* 近黑色文字，确保阅读对比度 */
-  color: #2D3436;
-  /* 行高适当，使多行文字疏密适中 */
-  line-height: 1.35;
-  /* 以下属性组合实现多行文本溢出时显示省略号（限制为两行） */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #222222;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;          /* 最多显示两行 */
+  -webkit-box-orient: vertical;
+  word-break: break-all;
 }
 
-/* 价格区域 */
+/* 价格行 */
 .card-price {
-  /* 弹性布局，使价格符号和数字水平对齐于基线 */
   display: flex;
   align-items: baseline;
+  gap: 4rpx;
+  color: #ff4d4f;                 /* 暖红色价格 */
 }
 
-/* 价格货币符号（¥） */
+/* 货币符号 */
 .price-sign {
-  /* 较小字号，与数字形成对比 */
-  font-size: 22rpx;
-  color: #FF6B6B;
-  font-weight: 700;
+  font-size: 26rpx;
+  font-weight: 600;
 }
 
 /* 价格数字 */
 .price-num {
-  /* 大字号突出价格 */
-  font-size: 34rpx;
-  color: #FF6B6B;
+  font-size: 40rpx;
   font-weight: 700;
-  /* 与符号保持微小间距，更紧凑 */
-  margin-left: 2rpx;
+  letter-spacing: -0.5rpx;
 }
+
+/* 可选：如果希望显示原价或销量等，可在此扩展 */

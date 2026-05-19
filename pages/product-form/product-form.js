@@ -1,3 +1,5 @@
+const api = require('../../utils/api');
+
 Page({
   data: {
     pageReady: false,
@@ -6,7 +8,8 @@ Page({
     itemNo: '',
     price: '',
     isRecommend: false,
-    isInStock: true
+    isInStock: true,
+    submitting: false
   },
 
   onReady() {
@@ -45,7 +48,9 @@ Page({
   },
 
   onSubmit() {
-    const { productImage, title, itemNo, price, isRecommend, isInStock } = this.data;
+    const { productImage, title, itemNo, price, isRecommend, isInStock, submitting } = this.data;
+
+    if (submitting) return;
 
     if (!title.trim()) {
       wx.showToast({ title: '请输入产品名称', icon: 'none' });
@@ -60,39 +65,41 @@ Page({
       return;
     }
 
-    const now = new Date();
-    const updateTime = now.getFullYear() + '-' +
-      String(now.getMonth() + 1).padStart(2, '0') + '-' +
-      String(now.getDate()).padStart(2, '0');
-
-    const newProduct = {
-      id: Date.now(),
+    const productData = {
       title: title.trim(),
       itemNo: itemNo.trim(),
       price: parseFloat(price),
       isRecommend,
-      isInStock,
-      updateTime,
-      image: productImage || '/static/images/default-product.png'
+      isInStock
     };
 
-    let products = [];
-    try {
-      products = wx.getStorageSync('products') || [];
-    } catch (e) {
-      products = [];
+    this.setData({ submitting: true });
+    wx.showLoading({ title: '提交中...' });
+
+    const doCreate = (imageUrl) => {
+      if (imageUrl) productData.image = imageUrl;
+      api.createProduct(productData).then(() => {
+        wx.hideLoading();
+        wx.showToast({ title: '添加成功', icon: 'success', duration: 1500 });
+        setTimeout(() => { wx.navigateBack(); }, 1500);
+      }).catch(err => {
+        wx.hideLoading();
+        console.error('创建产品失败', err);
+        wx.showToast({ title: '提交失败，请重试', icon: 'none' });
+        this.setData({ submitting: false });
+      });
+    };
+
+    if (productImage) {
+      api.uploadFile(productImage).then(res => {
+        const imageUrl = res.url || res.data || '';
+        doCreate(imageUrl);
+      }).catch(err => {
+        console.error('上传图片失败', err);
+        doCreate('');
+      });
+    } else {
+      doCreate('');
     }
-    products.unshift(newProduct);
-    wx.setStorageSync('products', products);
-
-    wx.showToast({
-      title: '添加成功',
-      icon: 'success',
-      duration: 1500
-    });
-
-    setTimeout(() => {
-      wx.navigateBack();
-    }, 1500);
   }
 });

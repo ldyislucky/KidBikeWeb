@@ -3,7 +3,13 @@
     "pages/index/index",
     "pages/product-form/product-form",
     "pages/my/my",
-    "pages/product-detail/product-detail"
+    "pages/product-detail/product-detail",
+    "pages/orders/orders",
+    "pages/favorites/favorites",
+    "pages/wallet/wallet",
+    "pages/addresses/addresses",
+    "pages/support/support",
+    "pages/about/about"
   ],
   "window": {
     "navigationBarTitleText": "KidBike 儿童自行车",

@@ -1,0 +1,75 @@
+<view class="page-container">
+  <!-- 选择模式提示 -->
+  <view class="select-banner" wx:if="{{selectMode}}">
+    <text>请选择收货地址</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="center-state" wx:if="{{loading}}">
+    <view class="spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 加载错误 -->
+  <view class="center-state" wx:elif="{{loadError}}">
+    <text class="error-icon">😵</text>
+    <text>加载失败</text>
+    <view class="retry-btn" bindtap="fetchAddresses">重试</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="center-state" wx:elif="{{addresses.length === 0}}">
+    <text class="empty-icon">📍</text>
+    <text>暂无收货地址</text>
+    <text class="hint-text">点击下方按钮新增地址</text>
+  </view>
+
+  <!-- 地址列表 -->
+  <view class="addr-list" wx:else>
+    <view
+      wx:for="{{addresses}}"
+      wx:key="id"
+      class="addr-card"
+      data-address="{{item}}"
+      bindtap="onSelectAddress"
+    >
+      <view class="addr-header">
+        <text class="addr-name">{{item.name}}</text>
+        <text class="addr-phone">{{item.phone}}</text>
+        <view class="addr-default" wx:if="{{item.isDefault}}">默认</view>
+      </view>
+      <text class="addr-detail">{{item.province}} {{item.city}} {{item.district}} {{item.detail}}</text>
+      <view class="addr-actions" wx:if="{{!selectMode}}">
+        <text class="addr-edit" data-address="{{item}}" catchtap="onEditAddress">编辑</text>
+        <text class="addr-delete" data-id="{{item.id}}" catchtap="onDeleteAddress">删除</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 新增按钮 -->
+  <view class="add-addr-btn" bindtap="onAddAddress">
+    <text>+ 新增地址</text>
+  </view>
+
+  <!-- 地址表单弹窗 -->
+  <view class="form-overlay" wx:if="{{showForm}}" catchtap="onFormCancel"></view>
+  <view class="form-panel {{showForm ? 'form-panel-show' : ''}}">
+    <view class="form-title">{{editingAddress ? '编辑地址' : '新增地址'}}</view>
+    <view class="form-body">
+      <input class="addr-input" placeholder="收货人姓名" value="{{formData.name}}" data-field="name" bindinput="onFormFieldInput" />
+      <input class="addr-input" type="number" placeholder="手机号码" value="{{formData.phone}}" data-field="phone" bindinput="onFormFieldInput" maxlength="11" />
+      <input class="addr-input" placeholder="省份" value="{{formData.province}}" data-field="province" bindinput="onFormFieldInput" />
+      <input class="addr-input" placeholder="城市" value="{{formData.city}}" data-field="city" bindinput="onFormFieldInput" />
+      <input class="addr-input" placeholder="区/县" value="{{formData.district}}" data-field="district" bindinput="onFormFieldInput" />
+      <input class="addr-input" placeholder="详细地址（街道、门牌号等）" value="{{formData.detail}}" data-field="detail" bindinput="onFormFieldInput" />
+      <view class="form-switch">
+        <text>设为默认地址</text>
+        <switch checked="{{formData.isDefault}}" bindchange="onFormDefaultChange" color="#FF6B6B" />
+      </view>
+    </view>
+    <view class="form-actions">
+      <view class="form-cancel" bindtap="onFormCancel">取消</view>
+      <view class="form-confirm" bindtap="onFormSubmit">保存</view>
+    </view>
+  </view>
+</view>

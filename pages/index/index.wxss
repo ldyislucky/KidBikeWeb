@@ -324,13 +324,17 @@
   box-shadow: 0 6rpx 18rpx rgba(255, 107, 107, 0.3);
 }
 
-/* ========== 产品列表 ========== */
 .product-grid {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 20rpx 16rpx;
-  justify-content: space-between;
+  /* 使用网格布局（Grid）来排列商品卡片 */
+  display: grid;
+  /* 定义两列，每列宽度为可用空间的一份（1fr），实现等宽两列布局 */
+  grid-template-columns: repeat(2, 1fr);  /* 两列等宽 */
+  /* 设置网格项之间的行间距和列间距均为 20rpx（rpx 为微信小程序响应式单位） */
+  gap: 20rpx;                             /* 网格间距 */
+  /* 在网格容器内部四周添加 20rpx 的内边距，避免内容贴边 */
+  padding: 20rpx;
 }
+
 
 /* ========== 加载中 ========== */
 .loading-state {

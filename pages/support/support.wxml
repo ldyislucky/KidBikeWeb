@@ -1,0 +1,41 @@
+<view class="page-container">
+  <!-- 客服信息卡片 -->
+  <view class="contact-card" wx:if="{{contact}}">
+    <view class="contact-bg"></view>
+    <view class="contact-content">
+      <text class="contact-icon">📞</text>
+      <text class="contact-label">客服热线</text>
+      <text class="contact-value">{{contact.phone || contact.hotline || '暂无'}}</text>
+      <text class="contact-hours" wx:if="{{contact.workHours || contact.hours}}">工作时间：{{contact.workHours || contact.hours}}</text>
+    </view>
+  </view>
+
+  <!-- 无联系方式 -->
+  <view class="center-state" wx:if="{{!loading && !contact}}">
+    <text class="empty-icon">📞</text>
+    <text>暂无客服信息</text>
+  </view>
+
+  <!-- 咨询表单 -->
+  <view class="form-card">
+    <view class="form-card-title">在线咨询</view>
+
+    <view class="product-ref" wx:if="{{productTitle}}">
+      <text class="ref-label">咨询产品：</text>
+      <text class="ref-value">{{productTitle}}</text>
+    </view>
+
+    <input class="inquiry-input" placeholder="您的联系方式（选填）" value="{{contactInfo}}" bindinput="onContactInput" />
+    <textarea
+      class="inquiry-textarea"
+      placeholder="请输入您的咨询内容..."
+      value="{{content}}"
+      bindinput="onContentInput"
+      maxlength="2000"
+    />
+
+    <view class="submit-btn" bindtap="onSubmit">
+      <text>{{submitting ? '提交中...' : '提交咨询'}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,105 @@
+const api = require('../../utils/api');
+
+Page({
+  data: {
+    favorites: [],
+    page: 1,
+    pageSize: 10,
+    hasMore: true,
+    loading: false,
+    loadError: false
+  },
+
+  onLoad() {
+    this.fetchFavorites();
+  },
+
+  fetchFavorites() {
+    this.setData({ loading: true, loadError: false, page: 1, hasMore: true });
+    api.getFavorites({ page: 1, pageSize: this.data.pageSize }).then(res => {
+      const items = this.extractItems(res);
+      this.setData({
+        favorites: items,
+        hasMore: items.length >= this.data.pageSize,
+        loading: false
+      });
+    }).catch(err => {
+      console.error('获取收藏列表失败', err);
+      this.setData({ loading: false, loadError: true });
+    });
+  },
+
+  loadMore() {
+    if (!this.data.hasMore || this.data.loading) return;
+    const page = this.data.page + 1;
+    this.setData({ page, loading: true });
+
+    api.getFavorites({ page, pageSize: this.data.pageSize }).then(res => {
+      const items = this.extractItems(res);
+      const newList = [...this.data.favorites, ...items];
+      this.setData({
+        favorites: newList,
+        hasMore: items.length >= this.data.pageSize,
+        loading: false
+      });
+    }).catch(() => {
+      this.setData({ page: page - 1, loading: false });
+    });
+  },
+
+  extractItems(res) {
+    if (Array.isArray(res)) return res;
+    if (res && Array.isArray(res.data)) return res.data;
+    if (res && res.data && Array.isArray(res.data.items)) return res.data.items;
+    return [];
+  },
+
+  getProductId(item) {
+    return item.productId || item.product_id || (item.product && item.product.id) || item.id;
+  },
+
+  getProduct(item) {
+    return item.product || item;
+  },
+
+  onItemTap(e) {
+    const item = e.currentTarget.dataset.item;
+    const product = this.getProduct(item);
+    const pid = this.getProductId(item);
+    if (pid) {
+      wx.navigateTo({ url: `/pages/product-detail/product-detail?id=${pid}` });
+    }
+  },
+
+  onRemoveFavorite(e) {
+    const item = e.currentTarget.dataset.item;
+    const pid = this.getProductId(item);
+    if (!pid) return;
+
+    wx.showModal({
+      title: '取消收藏',
+      content: '确定要取消收藏该产品吗？',
+      success: (res) => {
+        if (res.confirm) {
+          api.removeFavorite(pid).then(() => {
+            const favorites = this.data.favorites.filter(f => {
+              return this.getProductId(f) !== pid;
+            });
+            this.setData({ favorites });
+            wx.showToast({ title: '已取消收藏', icon: 'success' });
+          }).catch(() => {
+            wx.showToast({ title: '操作失败', icon: 'none' });
+          });
+        }
+      }
+    });
+  },
+
+  onPullDownRefresh() {
+    this.fetchFavorites().then(() => wx.stopPullDownRefresh());
+  },
+
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading) this.loadMore();
+  }
+});

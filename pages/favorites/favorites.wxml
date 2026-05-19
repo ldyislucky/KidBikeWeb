@@ -1,0 +1,51 @@
+<view class="page-container">
+  <!-- 加载中 -->
+  <view class="center-state" wx:if="{{loading}}">
+    <view class="spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 加载错误 -->
+  <view class="center-state" wx:elif="{{loadError}}">
+    <text class="error-icon">😵</text>
+    <text>加载失败</text>
+    <view class="retry-btn" bindtap="fetchFavorites">重试</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="center-state" wx:elif="{{favorites.length === 0}}">
+    <text class="empty-icon">💝</text>
+    <text>暂无收藏</text>
+    <text class="hint-text">去首页浏览并收藏喜欢的产品吧</text>
+  </view>
+
+  <!-- 收藏列表 -->
+  <view class="fav-list" wx:else>
+    <view
+      wx:for="{{favorites}}"
+      wx:key="id"
+      class="fav-card"
+      data-item="{{item}}"
+      bindtap="onItemTap"
+    >
+      <image
+        class="fav-img"
+        src="{{item.product.image || item.image || '/static/images/default-product.png'}}"
+        mode="aspectFill"
+      />
+      <view class="fav-info">
+        <text class="fav-title">{{item.product.title || item.title || '商品'}}</text>
+        <text class="fav-price">¥{{item.product.price || item.price || '-'}}</text>
+      </view>
+      <view class="fav-remove" data-item="{{item}}" catchtap="onRemoveFavorite">
+        <text>×</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 列表底部 -->
+  <view class="list-footer" wx:if="{{favorites.length > 0}}">
+    <text wx:if="{{loading}}">加载中...</text>
+    <text wx:elif="{{!hasMore}}">— 已经到底了 —</text>
+  </view>
+</view>

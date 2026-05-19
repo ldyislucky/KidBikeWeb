@@ -1,0 +1,33 @@
+.page-container { padding-bottom: 40rpx; min-height: 100vh; background: #FFF5F0; }
+
+/* ========== 状态筛选 ========== */
+.tabs-bar { display: flex; background: #fff; padding: 20rpx 24rpx; white-space: nowrap; border-bottom: 1rpx solid #F0E4DC; }
+.tab-item { display: inline-block; padding: 12rpx 28rpx; font-size: 26rpx; color: #636E72; border-radius: 28rpx; margin-right: 12rpx; background: #F8F5F3; transition: all 0.2s; }
+.tab-active { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: #fff; font-weight: 600; }
+
+/* ========== 通用居中状态 ========== */
+.center-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 160rpx 0; font-size: 28rpx; color: #BDC3C7; }
+.error-icon, .empty-icon { font-size: 80rpx; margin-bottom: 16rpx; }
+.retry-btn { margin-top: 24rpx; padding: 14rpx 48rpx; background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: #fff; border-radius: 36rpx; font-size: 26rpx; }
+.spinner { width: 56rpx; height: 56rpx; border: 4rpx solid #F0EDEA; border-top-color: #FF6B6B; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20rpx; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========== 订单卡片 ========== */
+.order-list { padding: 20rpx 24rpx; }
+.order-card { background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(255,107,107,0.04); }
+.order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14rpx; }
+.order-no { font-size: 24rpx; color: #BDC3C7; }
+.order-status { font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 16rpx; }
+.status-pending { background: #FFF3E0; color: #F39C12; }
+.status-confirmed { background: #E3F2FD; color: #2980B9; }
+.status-shipped { background: #F3E5F5; color: #8E44AD; }
+.status-delivered { background: #E8F5E9; color: #27AE60; }
+.status-cancelled { background: #F8F5F3; color: #BDC3C7; }
+.order-body { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14rpx; }
+.order-product { font-size: 28rpx; color: #2D3436; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.order-qty { font-size: 24rpx; color: #BDC3C7; margin-left: 16rpx; }
+.order-footer { display: flex; justify-content: space-between; align-items: center; }
+.order-time { font-size: 22rpx; color: #BDC3C7; }
+.order-amount { font-size: 30rpx; color: #FF6B6B; font-weight: 700; }
+
+.list-footer { text-align: center; padding: 24rpx 0; font-size: 24rpx; color: #BDC3C7; }

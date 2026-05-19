@@ -188,14 +188,30 @@
   font-weight: 600;
 }
 
-.footer-btn-contact {
+.footer-btn-fav {
+  flex: 0.8;
   background: #FFF5F0;
   color: #FF6B6B;
   border: 2rpx solid #FFE0D6;
+  font-size: 26rpx;
+}
+
+.footer-btn-fav.favorited {
+  background: #FFF0EC;
+  border-color: #FF6B6B;
+}
+
+.footer-btn-contact {
+  flex: 0.9;
+  background: #FFF5F0;
+  color: #FF6B6B;
+  border: 2rpx solid #FFE0D6;
+  font-size: 26rpx;
 }
 
 .footer-btn-order {
   background: linear-gradient(135deg, #FF6B6B, #FF8E53);
   color: #fff;
   box-shadow: 0 6rpx 18rpx rgba(255, 107, 107, 0.3);
+  font-size: 26rpx;
 }
