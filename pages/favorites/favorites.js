@@ -11,12 +11,39 @@ Page({
   },
 
   onLoad() {
+    // 数据加载在 onShow 统一处理
+  },
+
+  onShow() {
+    if (!this._checkLogin()) return;
     this.fetchFavorites();
+  },
+
+  // 登录守卫
+  _checkLogin() {
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能查看收藏',
+        confirmText: '去登录',
+        cancelText: '返回',
+        success: res => {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/login/login' });
+          } else {
+            wx.navigateBack();
+          }
+        }
+      });
+      return false;
+    }
+    return true;
   },
 
   fetchFavorites() {
     this.setData({ loading: true, loadError: false, page: 1, hasMore: true });
-    api.getFavorites({ page: 1, pageSize: this.data.pageSize }).then(res => {
+    return api.getFavorites({ page: 1, pageSize: this.data.pageSize }).then(res => {
       const items = this.extractItems(res);
       this.setData({
         favorites: items,
@@ -36,9 +63,8 @@ Page({
 
     api.getFavorites({ page, pageSize: this.data.pageSize }).then(res => {
       const items = this.extractItems(res);
-      const newList = [...this.data.favorites, ...items];
       this.setData({
-        favorites: newList,
+        favorites: [...this.data.favorites, ...items],
         hasMore: items.length >= this.data.pageSize,
         loading: false
       });
@@ -58,13 +84,8 @@ Page({
     return item.productId || item.product_id || (item.product && item.product.id) || item.id;
   },
 
-  getProduct(item) {
-    return item.product || item;
-  },
-
   onItemTap(e) {
     const item = e.currentTarget.dataset.item;
-    const product = this.getProduct(item);
     const pid = this.getProductId(item);
     if (pid) {
       wx.navigateTo({ url: `/pages/product-detail/product-detail?id=${pid}` });
@@ -79,12 +100,12 @@ Page({
     wx.showModal({
       title: '取消收藏',
       content: '确定要取消收藏该产品吗？',
+      confirmText: '确定',
+      cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
           api.removeFavorite(pid).then(() => {
-            const favorites = this.data.favorites.filter(f => {
-              return this.getProductId(f) !== pid;
-            });
+            const favorites = this.data.favorites.filter(f => this.getProductId(f) !== pid);
             this.setData({ favorites });
             wx.showToast({ title: '已取消收藏', icon: 'success' });
           }).catch(() => {
@@ -96,7 +117,9 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.fetchFavorites().then(() => wx.stopPullDownRefresh());
+    this.fetchFavorites()
+      .then(() => wx.stopPullDownRefresh())
+      .catch(() => wx.stopPullDownRefresh());
   },
 
   onReachBottom() {

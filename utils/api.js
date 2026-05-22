@@ -58,6 +58,14 @@ const wechatLogin = (code, avatarUrl, nickName) => {
   return request('/api/v1/auth/login/wechat', { method: 'POST', data });
 };
 
+const register = (data) => {
+  return request('/api/v1/auth/register', { method: 'POST', data });
+};
+
+const login = (data) => {
+  return request('/api/v1/auth/login', { method: 'POST', data });
+};
+
 // ==================== Users ====================
 
 const getUserInfo = () => {
@@ -183,6 +191,8 @@ module.exports = {
   updateProduct,
   deleteProduct,
   wechatLogin,
+  register,
+  login,
   getUserInfo,
   updateUserInfo,
   getOrders,

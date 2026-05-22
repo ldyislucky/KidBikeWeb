@@ -40,19 +40,32 @@
   z-index: 1;
 }
 
-.avatar-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  position: relative;
+/* ========== 未登录整块可点击区域 ========== */
+.user-unlogin-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.avatar-btn::after {
-  border: none;
+.avatar-unlogin {
+  opacity: 0.8;
 }
 
+.unlogin-nickname {
+  /* 复用 .nickname 的样式，通过额外类名控制颜色 */
+  color: var(--text, #2C2C2C) !important;
+}
+
+.unlogin-hint {
+  font-size: 24rpx;
+  color: #FF8E53;
+  margin-top: 8rpx;
+  background: rgba(255, 142, 83, 0.1);
+  padding: 6rpx 24rpx;
+  border-radius: 20rpx;
+}
+
+/* ========== 已登录头像 ========== */
 .avatar-wrap {
   position: relative;
 }
@@ -173,6 +186,27 @@
   font-size: 36rpx;
   color: #D0C8C0;
   font-weight: 300;
+}
+
+/* ========== 退出登录 ========== */
+.logout-section {
+  padding: 20rpx 30rpx 0;
+}
+
+.logout-btn {
+  background: #fff;
+  border-radius: 20rpx;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 20rpx rgba(255, 107, 107, 0.06);
+}
+
+.logout-text {
+  font-size: 30rpx;
+  color: #FF6B6B;
+  font-weight: 600;
 }
 
 /* ========== 底部信息 ========== */

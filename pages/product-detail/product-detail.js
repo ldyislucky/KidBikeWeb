@@ -35,7 +35,7 @@ Page({
     const token = wx.getStorageSync('token');
     if (!token) return;
     api.getFavorites({ pageSize: 50 }).then(res => {
-      const items = res.data || res.items || res || [];
+      const items = res.data || res.items || (Array.isArray(res) ? res : []);
       const fav = items.find(item => {
         const pid = item.productId || item.product_id || (item.product && item.product.id);
         return pid === Number(productId) || pid === String(productId);
@@ -50,7 +50,15 @@ Page({
 
     const token = wx.getStorageSync('token');
     if (!token) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能收藏产品',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: res => {
+          if (res.confirm) wx.navigateTo({ url: '/pages/login/login' });
+        }
+      });
       return;
     }
 
@@ -61,13 +69,9 @@ Page({
       : api.addFavorite(productId);
 
     request.then(() => {
-      this.setData({
-        isFavorited: !isFavorited,
-        favoriteLoading: false
-      });
+      this.setData({ isFavorited: !isFavorited, favoriteLoading: false });
       wx.showToast({ title: isFavorited ? '已取消收藏' : '已收藏', icon: 'success' });
-    }).catch(err => {
-      console.error('收藏操作失败', err);
+    }).catch(() => {
       wx.showToast({ title: '操作失败', icon: 'none' });
       this.setData({ favoriteLoading: false });
     });
@@ -76,7 +80,15 @@ Page({
   onOrder() {
     const token = wx.getStorageSync('token');
     if (!token) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能下单购买',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: res => {
+          if (res.confirm) wx.navigateTo({ url: '/pages/login/login' });
+        }
+      });
       return;
     }
     wx.navigateTo({

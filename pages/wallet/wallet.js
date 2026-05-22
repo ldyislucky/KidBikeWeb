@@ -13,13 +13,40 @@ Page({
   },
 
   onLoad() {
+    // 数据加载在 onShow 统一处理
+  },
+
+  onShow() {
+    if (!this._checkLogin()) return;
     this.fetchWallet();
     this.fetchTransactions();
   },
 
+  // 登录守卫
+  _checkLogin() {
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能查看钱包',
+        confirmText: '去登录',
+        cancelText: '返回',
+        success: res => {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/login/login' });
+          } else {
+            wx.navigateBack();
+          }
+        }
+      });
+      return false;
+    }
+    return true;
+  },
+
   fetchWallet() {
     this.setData({ loading: true, loadError: false });
-    api.getWallet().then(res => {
+    return api.getWallet().then(res => {
       const wallet = res.data || res;
       this.setData({ wallet, loading: false });
     }).catch(err => {
@@ -30,7 +57,7 @@ Page({
 
   fetchTransactions() {
     this.setData({ txLoading: true, page: 1, hasMore: true });
-    api.getTransactions({ page: 1, pageSize: this.data.pageSize }).then(res => {
+    return api.getTransactions({ page: 1, pageSize: this.data.pageSize }).then(res => {
       const items = this.extractItems(res);
       this.setData({
         transactions: items,
@@ -50,9 +77,8 @@ Page({
 
     api.getTransactions({ page, pageSize: this.data.pageSize }).then(res => {
       const items = this.extractItems(res);
-      const newList = [...this.data.transactions, ...items];
       this.setData({
-        transactions: newList,
+        transactions: [...this.data.transactions, ...items],
         hasMore: items.length >= this.data.pageSize,
         txLoading: false
       });
@@ -70,7 +96,8 @@ Page({
 
   onPullDownRefresh() {
     Promise.all([this.fetchWallet(), this.fetchTransactions()])
-      .then(() => wx.stopPullDownRefresh());
+      .then(() => wx.stopPullDownRefresh())
+      .catch(() => wx.stopPullDownRefresh());
   },
 
   onReachBottom() {

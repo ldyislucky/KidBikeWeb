@@ -46,11 +46,17 @@ Page({
 
   loadLocalUserInfo() {
     const info = wx.getStorageSync('userInfo');
-    if (info) {
+    if (info && info.nickName) {
       this.setData({
         'userInfo.avatar': info.avatarUrl || '',
         'userInfo.nickName': info.nickName || '童车用户',
         'userInfo.isLogin': true
+      });
+    } else {
+      this.setData({
+        'userInfo.avatar': '',
+        'userInfo.nickName': '点击登录',
+        'userInfo.isLogin': false
       });
     }
   },
@@ -84,7 +90,17 @@ Page({
     const item = this.data.menuList.find(m => m.id === id);
 
     if (!token && [1, 2, 3, 4].includes(id)) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后即可查看' + (item ? item.title : '此功能'),
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: res => {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/login/login' });
+          }
+        }
+      });
       return;
     }
 
@@ -93,9 +109,55 @@ Page({
     }
   },
 
+  // 点击头像区域（未登录时跳转登录页）
+  onAvatarTap() {
+    if (!this.data.userInfo.isLogin) {
+      wx.navigateTo({ url: '/pages/login/login' });
+    }
+  },
+
   onAddProduct() {
     wx.navigateTo({
       url: '/pages/product-form/product-form'
+    });
+  },
+
+  onLogin() {
+    wx.navigateTo({ url: '/pages/login/login' });
+  },
+
+  onRegister() {
+    wx.navigateTo({
+      url: '/pages/register/register'
+    });
+  },
+
+  onLogout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '确定要退出登录吗？',
+      confirmText: '退出',
+      confirmColor: '#FF6B6B',
+      cancelText: '取消',
+      success: res => {
+        if (res.confirm) {
+          // 调用全局 logout 方法统一清理
+          const app = getApp();
+          if (app && app.logout) {
+            app.logout();
+          } else {
+            wx.removeStorageSync('token');
+            wx.removeStorageSync('userInfo');
+          }
+          // 更新页面状态
+          this.setData({
+            'userInfo.avatar': '',
+            'userInfo.nickName': '点击登录',
+            'userInfo.isLogin': false
+          });
+          wx.showToast({ title: '已退出登录', icon: 'success', duration: 1500 });
+        }
+      }
     });
   }
 });

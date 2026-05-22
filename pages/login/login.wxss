@@ -1,0 +1,240 @@
+/* ========== 页面容器 ========== */
+.page-container {
+  min-height: 100vh;
+  background: var(--bg, #FAF6F4);
+}
+
+/* ========== 品牌头部 ========== */
+.brand-header {
+  position: relative;
+  height: 340rpx;
+  overflow: hidden;
+}
+
+.brand-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #FF6B6B 0%, #FF8E53 55%, #FFB347 100%);
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bg-circle-1 {
+  width: 240rpx;
+  height: 240rpx;
+  top: -80rpx;
+  right: -60rpx;
+}
+
+.bg-circle-2 {
+  width: 140rpx;
+  height: 140rpx;
+  bottom: -40rpx;
+  left: 20rpx;
+}
+
+.bg-circle-3 {
+  width: 80rpx;
+  height: 80rpx;
+  top: 60rpx;
+  left: 120rpx;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.brand-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding-bottom: 20rpx;
+}
+
+.brand-logo {
+  font-size: 72rpx;
+  margin-bottom: 12rpx;
+}
+
+.brand-name {
+  font-size: 48rpx;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 4rpx;
+}
+
+.brand-sub {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 10rpx;
+}
+
+/* ========== 表单区 ========== */
+.form-wrap {
+  padding: 0 30rpx;
+  margin-top: -40rpx;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx 10rpx;
+  box-shadow: 0 8rpx 40rpx rgba(255, 107, 107, 0.12);
+}
+
+.card-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text, #2C2C2C);
+  margin-bottom: 30rpx;
+}
+
+/* ========== 表单项 ========== */
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #F8F0EB;
+}
+
+.form-item.no-border {
+  border-bottom: none;
+}
+
+.input-icon-wrap {
+  width: 56rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-icon {
+  font-size: 34rpx;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--text, #2C2C2C);
+  padding: 0 16rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+}
+
+.input-placeholder {
+  color: #BDC3C7;
+}
+
+.eye-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon {
+  font-size: 32rpx;
+}
+
+/* ========== 提交按钮 ========== */
+.submit-section {
+  padding: 40rpx 0 20rpx;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  border-radius: 48rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.35);
+  transition: opacity 0.2s;
+}
+
+.submit-btn.submitting {
+  opacity: 0.65;
+}
+
+.submit-text {
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+}
+
+/* ========== 分割线 ========== */
+.divider {
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0 24rpx;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #F0E8E4;
+}
+
+.divider-text {
+  font-size: 24rpx;
+  color: #BDC3C7;
+  padding: 0 24rpx;
+  white-space: nowrap;
+}
+
+/* ========== 微信登录 ========== */
+.wechat-login-section {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10rpx;
+}
+
+.wechat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #07C160;
+  border-radius: 48rpx;
+  padding: 22rpx 60rpx;
+  box-shadow: 0 6rpx 20rpx rgba(7, 193, 96, 0.3);
+}
+
+.wechat-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.wechat-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+/* ========== 底部注册入口 ========== */
+.footer-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 36rpx 0 60rpx;
+}
+
+.footer-text {
+  font-size: 28rpx;
+  color: #BDC3C7;
+}
+
+.footer-link {
+  font-size: 28rpx;
+  color: #FF6B6B;
+  font-weight: 600;
+  margin-left: 8rpx;
+}

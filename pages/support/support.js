@@ -31,6 +31,22 @@ Page({
     });
   },
 
+  // 一键拨打客服电话
+  onCallPhone() {
+    const { contact } = this.data;
+    const phone = contact && (contact.phone || contact.hotline);
+    if (!phone) {
+      wx.showToast({ title: '暂无客服电话', icon: 'none' });
+      return;
+    }
+    wx.makePhoneCall({
+      phoneNumber: String(phone),
+      fail: () => {
+        // 用户取消或不支持时静默处理
+      }
+    });
+  },
+
   onContactInput(e) {
     this.setData({ contactInfo: e.detail.value });
   },

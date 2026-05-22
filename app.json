@@ -9,7 +9,9 @@
     "pages/wallet/wallet",
     "pages/addresses/addresses",
     "pages/support/support",
-    "pages/about/about"
+    "pages/about/about",
+    "pages/register/register",
+    "pages/login/login"
   ],
   "window": {
     "navigationBarTitleText": "KidBike 儿童自行车",

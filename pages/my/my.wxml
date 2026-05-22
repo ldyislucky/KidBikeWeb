@@ -5,16 +5,23 @@
     <view class="bg-circle bg-circle-2"></view>
   </view>
   <view class="user-info">
-    <button class="avatar-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo" wx:if="{{!userInfo.isLogin}}">
-      <image class="avatar" src="{{userInfo.avatar || '/static/images/default-avatar.png'}}" mode="aspectFill"></image>
+
+    <!-- 未登录：整块区域可点击，跳转登录页 -->
+    <view class="user-unlogin-block" wx:if="{{!userInfo.isLogin}}" bindtap="onLogin">
+      <image class="avatar avatar-unlogin" src="/static/images/default-avatar.png" mode="aspectFill"></image>
       <view class="avatar-glow"></view>
-    </button>
+      <text class="nickname unlogin-nickname">点击登录</text>
+      <text class="unlogin-hint">登录后享受完整服务 ›</text>
+    </view>
+
+    <!-- 已登录：展示头像 + 昵称 -->
     <view class="avatar-wrap" wx:else>
       <image class="avatar" src="{{userInfo.avatar || '/static/images/default-avatar.png'}}" mode="aspectFill"></image>
       <view class="avatar-glow"></view>
     </view>
-    <view class="nickname">{{userInfo.nickName}}</view>
+    <view class="nickname" wx:if="{{userInfo.isLogin}}">{{userInfo.nickName}}</view>
     <view class="user-tag" wx:if="{{userInfo.isLogin}}">已认证用户</view>
+
   </view>
 </view>
 
@@ -56,6 +63,13 @@
       </view>
       <text class="menu-arrow">›</text>
     </view>
+  </view>
+</view>
+
+<!-- 退出登录（已登录时显示） -->
+<view class="logout-section" wx:if="{{userInfo.isLogin}}">
+  <view class="logout-btn" bindtap="onLogout">
+    <text class="logout-text">退出登录</text>
   </view>
 </view>
 

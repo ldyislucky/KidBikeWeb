@@ -19,7 +19,34 @@ Page({
   },
 
   onLoad() {
+    // 数据加载在 onShow 统一处理
+  },
+
+  onShow() {
+    if (!this._checkLogin()) return;
     this.fetchOrders();
+  },
+
+  // 登录守卫：未登录则引导跳转，返回 false
+  _checkLogin() {
+    const token = wx.getStorageSync('token');
+    if (!token) {
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能查看订单',
+        confirmText: '去登录',
+        cancelText: '返回',
+        success: res => {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/login/login' });
+          } else {
+            wx.navigateBack();
+          }
+        }
+      });
+      return false;
+    }
+    return true;
   },
 
   fetchOrders() {
@@ -28,7 +55,7 @@ Page({
     const params = { page: 1, pageSize };
     if (activeStatus) params.status = activeStatus;
 
-    api.getOrders(params).then(res => {
+    return api.getOrders(params).then(res => {
       const items = this.extractItems(res);
       this.setData({
         orders: items,
@@ -52,14 +79,12 @@ Page({
 
     api.getOrders(params).then(res => {
       const items = this.extractItems(res);
-      const newOrders = [...this.data.orders, ...items];
       this.setData({
-        orders: newOrders,
+        orders: [...this.data.orders, ...items],
         hasMore: items.length >= pageSize,
         loading: false
       });
-    }).catch(err => {
-      console.error('加载更多失败', err);
+    }).catch(() => {
       this.setData({ page: page - 1, loading: false });
     });
   },
@@ -82,7 +107,10 @@ Page({
     const id = e.currentTarget.dataset.id;
     api.getOrder(id).then(res => {
       const order = res.data || res;
-      const statusMap = { pending: '待确认', confirmed: '已确认', shipped: '配送中', delivered: '已送达', cancelled: '已取消' };
+      const statusMap = {
+        pending: '待确认', confirmed: '已确认',
+        shipped: '配送中', delivered: '已送达', cancelled: '已取消'
+      };
       const productTitle = (order.product && order.product.title) || order.productTitle || '商品';
       wx.showModal({
         title: '订单详情',
@@ -95,7 +123,9 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.fetchOrders().then(() => wx.stopPullDownRefresh());
+    this.fetchOrders()
+      .then(() => wx.stopPullDownRefresh())
+      .catch(() => wx.stopPullDownRefresh());
   },
 
   onReachBottom() {
