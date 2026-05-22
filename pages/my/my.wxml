@@ -47,8 +47,8 @@
   </view>
 </view>
 
-<!-- 新增产品 -->
-<view class="menu-section">
+<!-- 新增产品（仅登录且为管理员时显示） -->
+<view class="menu-section" wx:if="{{userInfo.isLogin && userInfo.isAdmin}}">
   <view class="menu-title">产品管理</view>
   <view class="menu-card">
     <view class="menu-item add-item" bindtap="onAddProduct">

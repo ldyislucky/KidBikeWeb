@@ -5,7 +5,8 @@ Page({
     userInfo: {
       avatar: '',
       nickName: '点击登录',
-      isLogin: false
+      isLogin: false,
+      isAdmin: false   // 是否是管理员，控制「产品管理」板块显示
     },
     menuList: [
       { id: 1, icon: 'icon-a-024_bianji-37', title: '我的订单', url: '/pages/orders/orders' },
@@ -30,10 +31,14 @@ Page({
     if (token) {
       api.getUserInfo().then(res => {
         const user = res.data || res;
+        // 判断管理员：支持 role === 'admin' 或 isAdmin === true 两种字段约定
+        console.log('user信息为：',user);
+        const isAdmin = user.role === 'admin' || user.isAdmin === true;
         this.setData({
           'userInfo.avatar': user.avatarUrl || '',
           'userInfo.nickName': user.nickName || '童车用户',
-          'userInfo.isLogin': true
+          'userInfo.isLogin': true,
+          'userInfo.isAdmin': isAdmin
         });
         wx.setStorageSync('userInfo', user);
       }).catch(() => {
@@ -47,16 +52,19 @@ Page({
   loadLocalUserInfo() {
     const info = wx.getStorageSync('userInfo');
     if (info && info.nickName) {
+      const isAdmin = info.role === 'admin' || info.isAdmin === true;
       this.setData({
         'userInfo.avatar': info.avatarUrl || '',
         'userInfo.nickName': info.nickName || '童车用户',
-        'userInfo.isLogin': true
+        'userInfo.isLogin': true,
+        'userInfo.isAdmin': isAdmin
       });
     } else {
       this.setData({
         'userInfo.avatar': '',
         'userInfo.nickName': '点击登录',
-        'userInfo.isLogin': false
+        'userInfo.isLogin': false,
+        'userInfo.isAdmin': false
       });
     }
   },
@@ -69,6 +77,7 @@ Page({
         'userInfo.avatar': avatarUrl,
         'userInfo.nickName': nickName,
         'userInfo.isLogin': true
+        // isAdmin 保持 false，只有通过接口拉取到 role 才更新
       });
 
       wx.login({
@@ -77,6 +86,8 @@ Page({
             api.wechatLogin(res.code, avatarUrl, nickName).then(data => {
               const token = data.token || data.accessToken || data.access_token || '';
               if (token) wx.setStorageSync('token', token);
+              // 微信登录成功后重新拉取用户信息（含 role）
+              this.checkLoginStatus();
             }).catch(() => {});
           }
         }
@@ -117,9 +128,25 @@ Page({
   },
 
   onAddProduct() {
-    wx.navigateTo({
-      url: '/pages/product-form/product-form'
-    });
+    // 双重保险：点击时再次校验登录态和管理员权限
+    const { isLogin, isAdmin } = this.data.userInfo;
+    if (!isLogin) {
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能新增产品',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: res => {
+          if (res.confirm) wx.navigateTo({ url: '/pages/login/login' });
+        }
+      });
+      return;
+    }
+    if (!isAdmin) {
+      wx.showToast({ title: '仅管理员可新增产品', icon: 'none' });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/product-form/product-form' });
   },
 
   onLogin() {
@@ -127,9 +154,7 @@ Page({
   },
 
   onRegister() {
-    wx.navigateTo({
-      url: '/pages/register/register'
-    });
+    wx.navigateTo({ url: '/pages/register/register' });
   },
 
   onLogout() {
@@ -149,11 +174,12 @@ Page({
             wx.removeStorageSync('token');
             wx.removeStorageSync('userInfo');
           }
-          // 更新页面状态
+          // 更新页面状态（含管理员状态重置）
           this.setData({
             'userInfo.avatar': '',
             'userInfo.nickName': '点击登录',
-            'userInfo.isLogin': false
+            'userInfo.isLogin': false,
+            'userInfo.isAdmin': false
           });
           wx.showToast({ title: '已退出登录', icon: 'success', duration: 1500 });
         }
