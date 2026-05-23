@@ -26,6 +26,12 @@
   color: var(--text);
 }
 
+.card-header-sub {
+  font-size: 22rpx;
+  color: #BDC3C7;
+  margin-left: 8rpx;
+}
+
 /* ========== 图片上传 ========== */
 .image-upload {
   display: flex;
@@ -42,7 +48,6 @@
   align-items: center;
   justify-content: center;
   background: #FFFAF8;
-  transition: border-color 0.2s;
 }
 
 .upload-icon {
@@ -58,11 +63,76 @@
   margin-top: 16rpx;
 }
 
+.upload-hint-sub {
+  font-size: 20rpx;
+  color: #D0C8C0;
+  margin-top: 8rpx;
+}
+
+/* 已选图片 */
+.preview-wrap {
+  position: relative;
+  width: 320rpx;
+  height: 320rpx;
+}
+
 .preview-image {
   width: 320rpx;
   height: 320rpx;
   border-radius: 20rpx;
   border: 2rpx solid #F0E4DC;
+}
+
+/* 上传中 / 失败 遮罩 */
+.upload-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 20rpx;
+  background: rgba(0, 0, 0, 0.52);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-overlay-fail {
+  background: rgba(255, 68, 68, 0.65);
+}
+
+.upload-overlay-icon {
+  font-size: 48rpx;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.upload-overlay-text {
+  font-size: 26rpx;
+  color: #fff;
+  margin-top: 12rpx;
+}
+
+.upload-retry-text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 6rpx;
+}
+
+/* 上传成功重选提示 */
+.upload-reselect-tip {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 0 0 20rpx 20rpx;
+  padding: 10rpx 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-reselect-text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* ========== 表单项 ========== */
@@ -123,6 +193,31 @@
   width: 200rpx;
 }
 
+/* ========== 产品描述文本域 ========== */
+.desc-textarea {
+  width: 100%;
+  font-size: 28rpx;
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 160rpx;
+  box-sizing: border-box;
+}
+
+.desc-textarea::placeholder {
+  color: #BDC3C7;
+}
+
+.desc-count {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12rpx;
+}
+
+.desc-count-text {
+  font-size: 22rpx;
+  color: #BDC3C7;
+}
+
 /* ========== 开关行 ========== */
 .switch-row {
   justify-content: space-between;
@@ -159,6 +254,10 @@
   background: linear-gradient(135deg, #FF6B6B, #FF8E53);
   border-radius: 48rpx;
   box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.3);
+}
+
+.submit-btn-disabled {
+  opacity: 0.6;
 }
 
 .submit-text {

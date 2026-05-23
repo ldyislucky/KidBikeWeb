@@ -160,6 +160,14 @@
   background: linear-gradient(135deg, #FFF0EC, #FFE5DE);
 }
 
+.delete-icon {
+  background: linear-gradient(135deg, #FFF5F5, #FFE5E5);
+}
+
+.delete-icon .menu-icon {
+  color: #FF4444;
+}
+
 .menu-icon {
   font-size: 34rpx;
   color: #FF6B6B;
@@ -226,4 +234,132 @@
 .footer-ver {
   font-size: 22rpx;
   color: #D0C8C0;
+}
+
+/* ========== 删除产品弹窗 ========== */
+.del-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.del-modal-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.del-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36rpx 36rpx 24rpx;
+  border-bottom: 1rpx solid #F5F0EB;
+}
+
+.del-modal-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2C2C2C;
+}
+
+.del-modal-close {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #BDC3C7;
+  background: #F5F5F5;
+  border-radius: 50%;
+}
+
+.del-modal-loading,
+.del-modal-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.del-loading-text,
+.del-empty-text {
+  font-size: 28rpx;
+  color: #BDC3C7;
+}
+
+.del-product-list {
+  flex: 1;
+  overflow: hidden;
+  max-height: calc(80vh - 120rpx);
+  padding: 0 30rpx 20rpx;
+}
+
+.del-product-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F8F0EB;
+}
+
+.del-product-item:last-child {
+  border-bottom: none;
+}
+
+.del-product-img {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 16rpx;
+  background: #F5F0EB;
+  flex-shrink: 0;
+}
+
+.del-product-info {
+  flex: 1;
+  padding: 0 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.del-product-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2C2C2C;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.del-product-price {
+  font-size: 24rpx;
+  color: #FF6B6B;
+  margin-top: 6rpx;
+}
+
+.del-product-btn {
+  flex-shrink: 0;
+  background: #FFF0F0;
+  border: 1rpx solid #FFCCCC;
+  border-radius: 20rpx;
+  padding: 10rpx 28rpx;
+}
+
+.del-product-btn-text {
+  font-size: 24rpx;
+  color: #FF4444;
+  font-weight: 600;
 }

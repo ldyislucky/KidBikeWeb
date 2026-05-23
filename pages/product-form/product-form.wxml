@@ -1,15 +1,36 @@
 <view hidden="{{!pageReady}}">
+
 <!-- 产品图片上传 -->
 <view class="form-card">
   <view class="card-header">
     <text class="card-header-icon">📸</text>
     <text class="card-header-title">产品图片</text>
+    <text class="card-header-sub">（选填，支持 JPG/PNG）</text>
   </view>
   <view class="image-upload" bindtap="onChooseImage">
-    <image wx:if="{{productImage}}" class="preview-image" src="{{productImage}}" mode="aspectFill"></image>
+    <!-- 已选图片 -->
+    <view wx:if="{{productImage}}" class="preview-wrap">
+      <image class="preview-image" src="{{productImage}}" mode="aspectFill"></image>
+      <!-- 上传中遮罩 -->
+      <view wx:if="{{imageUploading}}" class="upload-overlay">
+        <text class="upload-overlay-text">上传中...</text>
+      </view>
+      <!-- 上传失败遮罩 -->
+      <view wx:elif="{{imageUploadFailed}}" class="upload-overlay upload-overlay-fail">
+        <text class="upload-overlay-icon">✕</text>
+        <text class="upload-overlay-text">上传失败</text>
+        <text class="upload-retry-text">点击重试</text>
+      </view>
+      <!-- 上传成功：底部提示可重选 -->
+      <view wx:else class="upload-reselect-tip">
+        <text class="upload-reselect-text">✓ 点击重新选择</text>
+      </view>
+    </view>
+    <!-- 未选图片 -->
     <view wx:else class="upload-placeholder">
       <text class="upload-icon">+</text>
       <text class="upload-hint">点击上传产品图片</text>
+      <text class="upload-hint-sub">从相册选择或拍摄</text>
     </view>
   </view>
 </view>
@@ -32,7 +53,7 @@
       <text>货号</text>
       <text class="required">*</text>
     </view>
-    <input class="form-input" placeholder="请输入货号，如 BK-001" value="{{itemNo}}" bindinput="onItemNoInput" />
+    <input class="form-input" placeholder="如 BK-001" value="{{itemNo}}" bindinput="onItemNoInput" />
   </view>
   <view class="form-item no-border">
     <view class="form-label">
@@ -43,6 +64,26 @@
       <text class="price-prefix">¥</text>
       <input class="form-input price-input" type="digit" placeholder="请输入价格" value="{{price}}" bindinput="onPriceInput" />
     </view>
+  </view>
+</view>
+
+<!-- 产品描述 -->
+<view class="form-card">
+  <view class="card-header">
+    <text class="card-header-icon">📝</text>
+    <text class="card-header-title">产品描述</text>
+    <text class="card-header-sub">（选填）</text>
+  </view>
+  <textarea
+    class="desc-textarea"
+    placeholder="请输入产品描述，如材质、规格、适用年龄等..."
+    value="{{description}}"
+    bindinput="onDescriptionInput"
+    maxlength="500"
+    auto-height
+  ></textarea>
+  <view class="desc-count">
+    <text class="desc-count-text">{{description.length}}/500</text>
   </view>
 </view>
 
@@ -70,8 +111,9 @@
 
 <!-- 提交按钮 -->
 <view class="submit-section">
-  <view class="submit-btn" bindtap="onSubmit">
-    <text class="submit-text">提交产品</text>
+  <view class="submit-btn {{submitting ? 'submit-btn-disabled' : ''}}" bindtap="onSubmit">
+    <text class="submit-text">{{submitting ? '提交中...' : '提交产品'}}</text>
   </view>
 </view>
+
 </view>

@@ -15,7 +15,11 @@ Page({
       { id: 4, icon: 'icon-shu1', title: '收货地址', url: '/pages/addresses/addresses' },
       { id: 5, icon: 'icon-shu', title: '联系客服', url: '/pages/support/support' },
       { id: 6, icon: 'icon-shu-copy', title: '关于我们', url: '/pages/about/about' }
-    ]
+    ],
+    // ---- 删除产品弹窗 ----
+    showDeleteModal: false,
+    deleteModalLoading: false,
+    productList: []
   },
 
   onLoad() {
@@ -32,7 +36,6 @@ Page({
       api.getUserInfo().then(res => {
         const user = res.data || res;
         // 判断管理员：支持 role === 'admin' 或 isAdmin === true 两种字段约定
-        console.log('user信息为：',user);
         const isAdmin = user.role === 'admin' || user.isAdmin === true;
         this.setData({
           'userInfo.avatar': user.avatarUrl || '',
@@ -127,6 +130,8 @@ Page({
     }
   },
 
+  // ==================== 产品管理 ====================
+
   onAddProduct() {
     // 双重保险：点击时再次校验登录态和管理员权限
     const { isLogin, isAdmin } = this.data.userInfo;
@@ -148,6 +153,75 @@ Page({
     }
     wx.navigateTo({ url: '/pages/product-form/product-form' });
   },
+
+  // 点击「删除产品」入口 → 打开弹窗并拉取产品列表
+  onDeleteProductEntry() {
+    const { isLogin, isAdmin } = this.data.userInfo;
+    if (!isLogin) {
+      wx.showModal({
+        title: '请先登录',
+        content: '登录后才能管理产品',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: res => {
+          if (res.confirm) wx.navigateTo({ url: '/pages/login/login' });
+        }
+      });
+      return;
+    }
+    if (!isAdmin) {
+      wx.showToast({ title: '仅管理员可删除产品', icon: 'none' });
+      return;
+    }
+
+    // 打开弹窗，拉取产品列表
+    this.setData({ showDeleteModal: true, deleteModalLoading: true, productList: [] });
+    api.getProducts().then(res => {
+      // 兼容 { data: [...] } 或直接数组两种格式
+      const list = Array.isArray(res) ? res : (res.data || res.items || res.list || []);
+      this.setData({ productList: list, deleteModalLoading: false });
+    }).catch(() => {
+      this.setData({ deleteModalLoading: false });
+      wx.showToast({ title: '获取产品列表失败', icon: 'none' });
+    });
+  },
+
+  // 点击单条产品「删除」按钮 → 二次确认 → 调接口
+  onDeleteProduct(e) {
+    const { id, name } = e.currentTarget.dataset;
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除「${name || '该产品'}」吗？删除后不可恢复。`,
+      confirmText: '删除',
+      confirmColor: '#FF4444',
+      cancelText: '取消',
+      success: res => {
+        if (!res.confirm) return;
+        wx.showLoading({ title: '删除中...' });
+        api.deleteProduct(id).then(() => {
+          wx.hideLoading();
+          wx.showToast({ title: '删除成功', icon: 'success' });
+          // 从列表中移除已删除的产品
+          const newList = this.data.productList.filter(p => p.id !== id);
+          this.setData({ productList: newList });
+        }).catch(err => {
+          wx.hideLoading();
+          const msg = (err.data && (err.data.detail || err.data.message)) || '删除失败，请重试';
+          wx.showToast({ title: msg, icon: 'none' });
+        });
+      }
+    });
+  },
+
+  // 关闭删除产品弹窗
+  onCloseDeleteModal() {
+    this.setData({ showDeleteModal: false, productList: [] });
+  },
+
+  // 阻止弹窗内容区点击冒泡关闭
+  noop() {},
+
+  // ==================== 登录 / 注销 ====================
 
   onLogin() {
     wx.navigateTo({ url: '/pages/login/login' });
