@@ -84,25 +84,6 @@ Page({
     });
   },
 
-  onOrder() {
-    const token = wx.getStorageSync('token');
-    if (!token) {
-      wx.showModal({
-        title: '请先登录',
-        content: '登录后才能下单购买',
-        confirmText: '去登录',
-        cancelText: '取消',
-        success: res => {
-          if (res.confirm) wx.navigateTo({ url: '/pages/login/login' });
-        }
-      });
-      return;
-    }
-    wx.navigateTo({
-      url: `/pages/addresses/addresses?action=select&productId=${this.data.productId}`
-    });
-  },
-
   onContact() {
     const { product } = this.data;
     wx.navigateTo({

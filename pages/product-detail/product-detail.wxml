@@ -71,9 +71,6 @@
       <view class="footer-btn footer-btn-contact" bindtap="onContact">
         <text>联系客服</text>
       </view>
-      <view class="footer-btn footer-btn-order" bindtap="onOrder">
-        <text>立即下单</text>
-      </view>
     </view>
   </block>
 </view>
