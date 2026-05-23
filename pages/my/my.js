@@ -179,6 +179,10 @@ Page({
     api.getProducts().then(res => {
       // 兼容 { data: [...] } 或直接数组两种格式
       const list = Array.isArray(res) ? res : (res.data || res.items || res.list || []);
+      // 为每个产品计算图片完整 URL
+      list.forEach(p => {
+        p._imageUrl = api.getImageUrl(p.image || p.imageUrl) || api.DEFAULT_PRODUCT_IMAGE;
+      });
       this.setData({ productList: list, deleteModalLoading: false });
     }).catch(() => {
       this.setData({ deleteModalLoading: false });
@@ -220,6 +224,13 @@ Page({
 
   // 阻止弹窗内容区点击冒泡关闭
   noop() {},
+
+  // 删除弹窗中产品图片加载失败时回退为默认图
+  onDelImgError(e) {
+    const idx = e.currentTarget.dataset.idx;
+    const key = `productList[${idx}]._imageUrl`;
+    this.setData({ [key]: '/static/images/default-product.png' });
+  },
 
   // ==================== 登录 / 注销 ====================
 

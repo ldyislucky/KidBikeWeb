@@ -1,29 +1,48 @@
+const api = require('../../utils/api');
+
 Component({
-  // 组件的属性列表（用于接收外部传入的数据）
   properties: {
-    // 商品对象属性
     product: {
-      type: Object,    // 属性类型为对象
-      value: {}        // 默认值为空对象
+      type: Object,
+      value: {}
+    }
+  },
+
+  data: {
+    imageUrl: '',           // 拼接后的完整图片 URL
+    imgLoadError: false     // 图片加载失败标记
+  },
+
+  observers: {
+    'product.image': function(image) {
+      this._updateImageUrl(image);
     }
   },
 
   lifetimes: {
     attached() {
-      console.log('接收到的 product 数据：', this.properties.product);
-      // 或者使用 this.data.product（效果相同）
+      this._updateImageUrl(this.data.product.image);
     }
   },
 
-  // 组件的方法列表
   methods: {
-    // 商品点击事件处理函数
     onTap() {
-      // 使用 wx.navigateTo 跳转到商品详情页
       wx.navigateTo({
-        // 跳转路径为 /pages/product-detail/product-detail
-        // 通过 URL 参数传递当前商品的 id
         url: `/pages/product-detail/product-detail?id=${this.data.product.id}`
+      });
+    },
+
+    onImageError() {
+      if (!this.data.imgLoadError) {
+        this.setData({ imgLoadError: true });
+      }
+    },
+
+    _updateImageUrl(image) {
+      const url = api.getImageUrl(image);
+      this.setData({
+        imageUrl: url || api.DEFAULT_PRODUCT_IMAGE,
+        imgLoadError: false
       });
     }
   }

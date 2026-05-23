@@ -1,5 +1,24 @@
 const BASE_URL = 'http://127.0.0.1:8000';
 
+// 图片基础路径（后端 image 字段只存文件名，前端拼接完整 URL）
+const IMAGE_BASE_URL = BASE_URL + '/static/uploads';
+
+/**
+ * 将后端返回的文件名拼接为完整图片 URL
+ * @param {string} filename - 图片文件名，如 "abc123.jpg"
+ * @returns {string} 完整 URL 或空字符串（无文件名时返回默认占位图路径）
+ */
+const getImageUrl = (filename) => {
+  if (!filename || typeof filename !== 'string') return '';
+  // 已经是完整 URL 则直接返回
+  if (filename.startsWith('http://') || filename.startsWith('https://')) return filename;
+  // 拼接基础路径 + URL 编码文件名（处理中文、空格等特殊字符）
+  return IMAGE_BASE_URL + '/' + encodeURIComponent(filename);
+};
+
+// 默认占位图路径
+const DEFAULT_PRODUCT_IMAGE = '/static/images/default-product.png';
+
 const getToken = () => wx.getStorageSync('token') || '';
 
 const request = (url, options = {}) => {
@@ -230,6 +249,9 @@ const healthCheck = () => {
 
 module.exports = {
   BASE_URL,
+  IMAGE_BASE_URL,
+  getImageUrl,
+  DEFAULT_PRODUCT_IMAGE,
   getProducts,
   getProduct,
   createProduct,

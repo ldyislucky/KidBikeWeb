@@ -30,8 +30,10 @@
     >
       <image
         class="fav-img"
-        src="{{item.product.image || item.image || '/static/images/default-product.png'}}"
+        src="{{item._imageUrl}}"
         mode="aspectFill"
+        data-idx="{{index}}"
+        binderror="onFavImgError"
       />
       <view class="fav-info">
         <text class="fav-title">{{item.product.title || item.title || '商品'}}</text>

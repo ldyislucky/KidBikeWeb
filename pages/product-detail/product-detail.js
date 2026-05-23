@@ -3,6 +3,8 @@ const api = require('../../utils/api');
 Page({
   data: {
     product: {},
+    imageUrl: '',
+    imgLoadError: false,
     loading: true,
     loadError: false,
     isFavorited: false,
@@ -24,7 +26,12 @@ Page({
       const product = res.data || res;
       const app = getApp();
       app.globalData.currentProduct = product;
-      this.setData({ product, loading: false });
+      this.setData({
+        product,
+        imageUrl: api.getImageUrl(product.image) || api.DEFAULT_PRODUCT_IMAGE,
+        imgLoadError: false,
+        loading: false
+      });
     }).catch(err => {
       console.error('获取产品详情失败', err);
       this.setData({ loading: false, loadError: true });
@@ -108,5 +115,11 @@ Page({
       title: this.data.product.title || 'KidBike 儿童自行车',
       path: '/pages/index/index'
     };
+  },
+
+  onImageError() {
+    if (!this.data.imgLoadError) {
+      this.setData({ imgLoadError: true });
+    }
   }
 });

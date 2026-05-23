@@ -74,10 +74,18 @@ Page({
   },
 
   extractItems(res) {
-    if (Array.isArray(res)) return res;
-    if (res && Array.isArray(res.data)) return res.data;
-    if (res && res.data && Array.isArray(res.data.items)) return res.data.items;
-    return [];
+    let items = [];
+    if (Array.isArray(res)) items = res;
+    else if (res && Array.isArray(res.data)) items = res.data;
+    else if (res && res.data && Array.isArray(res.data.items)) items = res.data.items;
+
+    // 为每个收藏项计算图片完整 URL
+    items.forEach(item => {
+      const imageName = (item.product && item.product.image) || item.image || '';
+      item._imageUrl = api.getImageUrl(imageName) || api.DEFAULT_PRODUCT_IMAGE;
+    });
+
+    return items;
   },
 
   getProductId(item) {
@@ -124,5 +132,11 @@ Page({
 
   onReachBottom() {
     if (this.data.hasMore && !this.data.loading) this.loadMore();
+  },
+
+  onFavImgError(e) {
+    const idx = e.currentTarget.dataset.idx;
+    const key = `favorites[${idx}]._imageUrl`;
+    this.setData({ [key]: '/static/images/default-product.png' });
   }
 });

@@ -1,6 +1,11 @@
 <view class="product-card" bindtap="onTap">
   <view class="card-img-wrap">
-    <image class="card-img" src="{{product.image}}" mode="aspectFill" />
+    <image
+      class="card-img"
+      src="{{imgLoadError ? '/static/images/default-product.png' : imageUrl}}"
+      mode="aspectFill"
+      binderror="onImageError"
+    />
     <view class="badge badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
     <view class="badge badge-stock" wx:if="{{!product.isInStock}}">预售</view>
   </view>

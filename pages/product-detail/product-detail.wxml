@@ -14,7 +14,12 @@
   <block wx:else>
     <!-- 产品大图 -->
     <view class="detail-image-wrap">
-      <image class="detail-image" src="{{product.image}}" mode="aspectFill" />
+      <image
+        class="detail-image"
+        src="{{imgLoadError ? '/static/images/default-product.png' : imageUrl}}"
+        mode="aspectFill"
+        binderror="onImageError"
+      />
       <view class="image-badge image-badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
       <view class="image-badge image-badge-stock" wx:if="{{!product.isInStock}}">预售</view>
     </view>

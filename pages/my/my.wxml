@@ -124,8 +124,10 @@
       >
         <image
           class="del-product-img"
-          src="{{item.imageUrl || item.image || '/static/images/default-avatar.png'}}"
+          src="{{item._imageUrl}}"
           mode="aspectFill"
+          data-idx="{{index}}"
+          binderror="onDelImgError"
         ></image>
         <view class="del-product-info">
           <text class="del-product-name">{{item.name}}</text>
