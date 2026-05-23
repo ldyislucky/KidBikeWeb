@@ -41,6 +41,51 @@ const createProduct = (data) => {
   return request('/api/v1/products', { method: 'POST', data });
 };
 
+/**
+ * 新增产品（含图片上传）
+ * 使用 wx.uploadFile 一次性上传图片文件 + 产品 JSON 数据
+ * 后端通过 multipart/form-data 同时接收文件和产品信息
+ */
+const createProductWithFile = (filePath, productData) => {
+  return new Promise((resolve, reject) => {
+    const token = getToken();
+    const header = {};
+    if (token) header['Authorization'] = `Bearer ${token}`;
+
+    wx.uploadFile({
+      url: BASE_URL + '/api/v1/products',
+      filePath,
+      name: 'file',
+      header,
+      formData: {
+        title: productData.title,
+        item_no: productData.item_no,
+        price: String(productData.price),
+        is_recommend: String(productData.is_recommend),
+        is_in_stock: String(productData.is_in_stock),
+        ...(productData.description ? { description: productData.description } : {})
+      },
+      success(res) {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try {
+            resolve(JSON.parse(res.data));
+          } catch (e) {
+            resolve(res.data);
+          }
+        } else {
+          // 保留原始数据便于调试
+          let parsed = res.data;
+          try { parsed = JSON.parse(res.data); } catch (e) { /* ignore */ }
+          reject({ ...res, data: parsed });
+        }
+      },
+      fail(err) {
+        reject(err);
+      }
+    });
+  });
+};
+
 const updateProduct = (id, data) => {
   return request(`/api/v1/products/${id}`, { method: 'PUT', data });
 };
@@ -188,6 +233,7 @@ module.exports = {
   getProducts,
   getProduct,
   createProduct,
+  createProductWithFile,
   updateProduct,
   deleteProduct,
   wechatLogin,

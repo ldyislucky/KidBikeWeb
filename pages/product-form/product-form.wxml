@@ -8,21 +8,10 @@
     <text class="card-header-sub">（选填，支持 JPG/PNG）</text>
   </view>
   <view class="image-upload" bindtap="onChooseImage">
-    <!-- 已选图片 -->
+    <!-- 已选图片（仅预览，提交时才上传） -->
     <view wx:if="{{productImage}}" class="preview-wrap">
       <image class="preview-image" src="{{productImage}}" mode="aspectFill"></image>
-      <!-- 上传中遮罩 -->
-      <view wx:if="{{imageUploading}}" class="upload-overlay">
-        <text class="upload-overlay-text">上传中...</text>
-      </view>
-      <!-- 上传失败遮罩 -->
-      <view wx:elif="{{imageUploadFailed}}" class="upload-overlay upload-overlay-fail">
-        <text class="upload-overlay-icon">✕</text>
-        <text class="upload-overlay-text">上传失败</text>
-        <text class="upload-retry-text">点击重试</text>
-      </view>
-      <!-- 上传成功：底部提示可重选 -->
-      <view wx:else class="upload-reselect-tip">
+      <view class="upload-reselect-tip">
         <text class="upload-reselect-text">✓ 点击重新选择</text>
       </view>
     </view>
