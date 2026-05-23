@@ -41,7 +41,7 @@ Page({
   checkFavoriteStatus(productId) {
     const token = wx.getStorageSync('token');
     if (!token) return;
-    api.getFavorites({ pageSize: 50 }).then(res => {
+    api.getFavorites({ pageSize: 30 }).then(res => {
       const items = res.data || res.items || (Array.isArray(res) ? res : []);
       const fav = items.find(item => {
         const pid = item.productId || item.product_id || (item.product && item.product.id);

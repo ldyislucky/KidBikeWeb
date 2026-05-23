@@ -78,42 +78,6 @@ Page({
     });
   },
 
-  // 微信一键登录
-  onWechatLogin() {
-    wx.showLoading({ title: '登录中...' });
-    wx.login({
-      success: res => {
-        if (res.code) {
-          api.wechatLogin(res.code).then(data => {
-            wx.hideLoading();
-            const token = data.token || data.accessToken || data.access_token || '';
-            const user = data.user || null;
-            if (token) wx.setStorageSync('token', token);
-            if (user) wx.setStorageSync('userInfo', user);
-            wx.showToast({ title: '登录成功', icon: 'success', duration: 1500 });
-            setTimeout(() => {
-              if (getCurrentPages().length > 1) {
-                wx.navigateBack();
-              } else {
-                wx.switchTab({ url: '/pages/my/my' });
-              }
-            }, 1500);
-          }).catch(() => {
-            wx.hideLoading();
-            wx.showToast({ title: '微信登录失败，请重试', icon: 'none' });
-          });
-        } else {
-          wx.hideLoading();
-          wx.showToast({ title: '获取登录凭证失败', icon: 'none' });
-        }
-      },
-      fail: () => {
-        wx.hideLoading();
-        wx.showToast({ title: '微信登录失败', icon: 'none' });
-      }
-    });
-  },
-
   onGoRegister() {
     wx.navigateTo({ url: '/pages/register/register' });
   }
