@@ -207,3 +207,68 @@
   color: #fff;
   box-shadow: 0 6rpx 18rpx rgba(255, 107, 107, 0.3);
 }
+
+/* ========== 管理员更多按钮 ========== */
+.footer-btn-more {
+  flex: 0.5;
+  background: #FFF5F0;
+  color: #636E72;
+  border: 2rpx solid #FFE0D6;
+  font-size: 36rpx;
+  font-weight: 700;
+  letter-spacing: 4rpx;
+}
+
+/* ========== 管理员操作弹窗 ========== */
+.admin-action-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 998;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.admin-action-sheet {
+  width: 100%;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: hidden;
+}
+
+.admin-action-item {
+  display: flex;
+  align-items: center;
+  padding: 36rpx 40rpx;
+  transition: background 0.15s;
+}
+
+.admin-action-item:active {
+  background: #F8F0EB;
+}
+
+.admin-action-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.admin-action-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2D3436;
+}
+
+.admin-action-delete .admin-action-text {
+  color: #FF4444;
+}
+
+.admin-action-divider {
+  height: 1rpx;
+  background: #F0EBE6;
+  margin: 0 40rpx;
+}

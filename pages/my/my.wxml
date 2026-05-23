@@ -64,19 +64,6 @@
       </view>
       <text class="menu-arrow">›</text>
     </view>
-    <!-- 删除产品 -->
-    <view class="menu-item delete-item" bindtap="onDeleteProductEntry">
-      <view class="menu-left">
-        <view class="menu-icon-wrap delete-icon">
-          <text class="menu-icon iconfont icon-shanchu"></text>
-        </view>
-        <view class="add-info">
-          <text class="menu-text">删除产品</text>
-          <text class="menu-sub">下架并删除已有产品</text>
-        </view>
-      </view>
-      <text class="menu-arrow">›</text>
-    </view>
   </view>
 </view>
 
@@ -91,52 +78,4 @@
 <view class="footer-info">
   <view class="footer-brand">🚲 KidBike 儿童自行车</view>
   <text class="footer-ver">v1.0.0</text>
-</view>
-
-<!-- ========== 删除产品弹窗 ========== -->
-<view class="del-modal-mask" wx:if="{{showDeleteModal}}" bindtap="onCloseDeleteModal">
-  <view class="del-modal-card" catchtap="noop">
-    <!-- 弹窗头部 -->
-    <view class="del-modal-header">
-      <text class="del-modal-title">选择要删除的产品</text>
-      <view class="del-modal-close" bindtap="onCloseDeleteModal">✕</view>
-    </view>
-
-    <!-- 加载中 -->
-    <view class="del-modal-loading" wx:if="{{deleteModalLoading}}">
-      <text class="del-loading-text">加载中...</text>
-    </view>
-
-    <!-- 空状态 -->
-    <view class="del-modal-empty" wx:elif="{{productList.length === 0}}">
-      <text class="del-empty-text">暂无产品</text>
-    </view>
-
-    <!-- 产品列表 -->
-    <scroll-view scroll-y class="del-product-list" wx:else>
-      <view
-        wx:for="{{productList}}"
-        wx:key="id"
-        class="del-product-item"
-        data-id="{{item.id}}"
-        data-name="{{item.name}}"
-        bindtap="onDeleteProduct"
-      >
-        <image
-          class="del-product-img"
-          src="{{item._imageUrl}}"
-          mode="aspectFill"
-          data-idx="{{index}}"
-          binderror="onDelImgError"
-        ></image>
-        <view class="del-product-info">
-          <text class="del-product-name">{{item.name}}</text>
-          <text class="del-product-price">¥{{item.price}}</text>
-        </view>
-        <view class="del-product-btn">
-          <text class="del-product-btn-text">删除</text>
-        </view>
-      </view>
-    </scroll-view>
-  </view>
 </view>

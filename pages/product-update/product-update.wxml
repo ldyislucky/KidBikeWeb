@@ -1,0 +1,177 @@
+<view class="page-container">
+
+  <!-- 加载中 -->
+  <view class="state-wrap" wx:if="{{loading}}">
+    <view class="state-icon">⏳</view>
+    <text class="state-text">加载中...</text>
+  </view>
+
+  <!-- 加载失败 -->
+  <view class="state-wrap" wx:elif="{{loadError}}">
+    <view class="state-icon">😵</view>
+    <text class="state-text">加载失败</text>
+    <view class="retry-btn" bindtap="onRetryLoad">
+      <text>点击重试</text>
+    </view>
+  </view>
+
+  <block wx:else>
+
+    <!-- 图片管理 -->
+    <view class="form-card">
+      <view class="card-header">
+        <text class="card-header-icon">📸</text>
+        <text class="card-header-title">产品图片</text>
+        <text class="card-header-sub">{{serverImages.length + localImages.length}}/{{maxImages}}</text>
+      </view>
+
+      <view class="image-grid">
+        <!-- 服务端已有图片 -->
+        <view
+          class="image-item"
+          wx:for="{{serverImageUrls}}"
+          wx:key="index"
+        >
+          <image
+            class="image-thumb"
+            src="{{item}}"
+            mode="aspectFill"
+            data-idx="{{index}}"
+            binderror="onImageError"
+          />
+          <view
+            class="image-delete-btn"
+            data-index="{{index}}"
+            bindtap="onDeleteServerImage"
+          >
+            <text class="image-delete-icon">✕</text>
+          </view>
+        </view>
+
+        <!-- 本地暂存新图片（提交后上传） -->
+        <view
+          class="image-item"
+          wx:for="{{localImages}}"
+          wx:key="index"
+        >
+          <image
+            class="image-thumb"
+            src="{{item}}"
+            mode="aspectFill"
+          />
+          <view class="image-local-badge">新</view>
+          <view
+            class="image-delete-btn"
+            data-index="{{index}}"
+            bindtap="onDeleteLocalImage"
+          >
+            <text class="image-delete-icon">✕</text>
+          </view>
+        </view>
+
+        <!-- 添加图片按钮 -->
+        <view
+          class="image-add-btn"
+          wx:if="{{serverImages.length + localImages.length < maxImages && !imageOperating}}"
+          bindtap="onChooseImage"
+        >
+          <text class="add-icon-text">+</text>
+          <text class="add-hint-text">添加图片</text>
+        </view>
+      </view>
+
+      <text class="image-full-tip" wx:if="{{serverImages.length + localImages.length >= maxImages}}">
+        已达图片数量上限（最多{{maxImages}}张）
+      </text>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="form-card">
+      <view class="card-header">
+        <text class="card-header-icon">📋</text>
+        <text class="card-header-title">基本信息</text>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">
+          <text>产品名称</text>
+          <text class="required">*</text>
+        </view>
+        <input class="form-input" placeholder="请输入产品名称" value="{{title}}" bindinput="onTitleInput" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">
+          <text>货号</text>
+          <text class="required">*</text>
+        </view>
+        <input class="form-input" placeholder="请输入货号" value="{{itemNo}}" bindinput="onItemNoInput" />
+      </view>
+
+      <view class="form-item no-border">
+        <view class="form-label">
+          <text>价格</text>
+          <text class="required">*</text>
+        </view>
+        <view class="price-input-wrap">
+          <text class="price-prefix">¥</text>
+          <input class="form-input price-input" type="digit" placeholder="请输入价格" value="{{price}}" bindinput="onPriceInput" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 产品描述 -->
+    <view class="form-card">
+      <view class="card-header">
+        <text class="card-header-icon">📝</text>
+        <text class="card-header-title">产品描述</text>
+        <text class="card-header-sub">（选填）</text>
+      </view>
+      <textarea
+        class="desc-textarea"
+        placeholder="请输入产品描述，如材质、规格、适用年龄等..."
+        value="{{description}}"
+        bindinput="onDescInput"
+        maxlength="500"
+        auto-height
+      ></textarea>
+      <view class="desc-counter">
+        <text>{{description.length}}/500</text>
+      </view>
+    </view>
+
+    <!-- 产品属性 -->
+    <view class="form-card">
+      <view class="card-header">
+        <text class="card-header-icon">🏷️</text>
+        <text class="card-header-title">产品属性</text>
+      </view>
+
+      <view class="switch-row">
+        <view class="switch-info">
+          <text class="switch-label">主推产品</text>
+          <text class="switch-desc">开启后将在首页主推栏目展示</text>
+        </view>
+        <switch checked="{{isRecommend}}" bindchange="onRecommendChange" color="#FF6B6B" />
+      </view>
+
+      <view class="switch-row">
+        <view class="switch-info">
+          <text class="switch-label">现货产品</text>
+          <text class="switch-desc">标记该产品为现货状态</text>
+        </view>
+        <switch checked="{{isInStock}}" bindchange="onStockChange" color="#FF6B6B" />
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-section">
+      <view class="submit-btn {{submitting ? 'submitting' : ''}}" bindtap="onSubmit">
+        <text class="submit-text">{{submitting ? '保存中...' : '保存产品'}}</text>
+      </view>
+    </view>
+
+    <view class="bottom-placeholder"></view>
+
+  </block>
+</view>

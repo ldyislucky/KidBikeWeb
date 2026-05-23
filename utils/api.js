@@ -113,6 +113,16 @@ const deleteProduct = (id) => {
   return request(`/api/v1/products/${id}`, { method: 'DELETE' });
 };
 
+// POST /api/v1/products/{id}/images — 添加图片到产品
+const addProductImages = (id, fileNames) => {
+  return request(`/api/v1/products/${id}/images`, { method: 'POST', data: { fileNames } });
+};
+
+// DELETE /api/v1/products/{id}/images — 删除产品图片
+const deleteProductImages = (id, fileNames) => {
+  return request(`/api/v1/products/${id}/images`, { method: 'DELETE', data: { fileNames } });
+};
+
 // ==================== Auth ====================
 
 const wechatLogin = (code, avatarUrl, nickName) => {
@@ -263,6 +273,8 @@ module.exports = {
   createProductWithFile,
   updateProduct,
   deleteProduct,
+  addProductImages,
+  deleteProductImages,
   wechatLogin,
   register,
   login,

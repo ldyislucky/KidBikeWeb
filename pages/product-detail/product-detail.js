@@ -8,16 +8,26 @@ Page({
     loading: true,
     loadError: false,
     isFavorited: false,
-    favoriteLoading: false
+    favoriteLoading: false,
+    isAdmin: false,
+    showAdminAction: false,
+    productId: null
   },
 
   onLoad(options) {
     const id = options.id;
     if (id) {
       this.setData({ productId: id });
+      this.checkAdminStatus();
       this.fetchProduct(id);
       this.checkFavoriteStatus(id);
     }
+  },
+
+  checkAdminStatus() {
+    const userInfo = wx.getStorageSync('userInfo');
+    const isAdmin = userInfo && (userInfo.role === 'admin' || userInfo.isAdmin === true);
+    this.setData({ isAdmin });
   },
 
   fetchProduct(id) {
@@ -108,5 +118,48 @@ Page({
     if (!this.data.imgLoadError) {
       this.setData({ imgLoadError: true });
     }
+  },
+
+  // ==================== 管理员操作 ====================
+
+  onShowMore() {
+    this.setData({ showAdminAction: true });
+  },
+
+  onHideMore() {
+    this.setData({ showAdminAction: false });
+  },
+
+  noop() {},
+
+  onAdminUpdate() {
+    const { productId } = this.data;
+    this.setData({ showAdminAction: false });
+    wx.navigateTo({ url: `/pages/product-update/product-update?id=${productId}` });
+  },
+
+  onAdminDelete() {
+    const { productId, product } = this.data;
+    this.setData({ showAdminAction: false });
+    wx.showModal({
+      title: '确认删除',
+      content: `确定要删除「${product.title || product.name || '该产品'}」吗？删除后不可恢复。`,
+      confirmText: '删除',
+      confirmColor: '#FF4444',
+      cancelText: '取消',
+      success: res => {
+        if (!res.confirm) return;
+        wx.showLoading({ title: '删除中...' });
+        api.deleteProduct(productId).then(() => {
+          wx.hideLoading();
+          wx.showToast({ title: '删除成功', icon: 'success' });
+          setTimeout(() => wx.navigateBack(), 1000);
+        }).catch(err => {
+          wx.hideLoading();
+          const msg = (err.data && (err.data.detail || err.data.message)) || '删除失败，请重试';
+          wx.showToast({ title: msg, icon: 'none' });
+        });
+      }
+    });
   }
 });

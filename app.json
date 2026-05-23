@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/product-form/product-form",
+    "pages/product-update/product-update",
     "pages/my/my",
     "pages/product-detail/product-detail",
     "pages/orders/orders",

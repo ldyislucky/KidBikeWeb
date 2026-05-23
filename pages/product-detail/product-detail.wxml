@@ -71,6 +71,25 @@
       <view class="footer-btn footer-btn-contact" bindtap="onContact">
         <text>联系客服</text>
       </view>
+      <!-- 管理员：更多操作 -->
+      <view class="footer-btn footer-btn-more" wx:if="{{isAdmin}}" bindtap="onShowMore">
+        <text>···</text>
+      </view>
+    </view>
+
+    <!-- 管理员操作弹窗 -->
+    <view class="admin-action-mask" wx:if="{{showAdminAction}}" bindtap="onHideMore">
+      <view class="admin-action-sheet" catchtap="noop">
+        <view class="admin-action-item admin-action-update" bindtap="onAdminUpdate">
+          <text class="admin-action-icon">✏️</text>
+          <text class="admin-action-text">更新产品</text>
+        </view>
+        <view class="admin-action-divider"></view>
+        <view class="admin-action-item admin-action-delete" bindtap="onAdminDelete">
+          <text class="admin-action-icon">🗑️</text>
+          <text class="admin-action-text">删除产品</text>
+        </view>
+      </view>
     </view>
   </block>
 </view>
