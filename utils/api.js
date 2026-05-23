@@ -160,6 +160,11 @@ const getFavorites = (params = {}) => {
   return request('/api/v1/favorites', { data: params });
 };
 
+// 检查指定产品是否已收藏（GET /api/v1/favorites/check?product_id=xxx）
+const checkFavorite = (productId) => {
+  return request(`/api/v1/favorites/check?product_id=${productId}`);
+};
+
 const addFavorite = (productId) => {
   return request('/api/v1/favorites', { method: 'POST', data: { productId } });
 };
@@ -267,6 +272,7 @@ module.exports = {
   createOrder,
   getOrder,
   getFavorites,
+  checkFavorite,
   addFavorite,
   removeFavorite,
   getWallet,

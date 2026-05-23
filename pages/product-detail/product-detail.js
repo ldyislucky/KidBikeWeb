@@ -1,4 +1,4 @@
-const api = require('../../utils/api');
+﻿const api = require('../../utils/api');
 
 Page({
   data: {
@@ -38,17 +38,23 @@ Page({
     });
   },
 
+  // 调用后端 GET /api/v1/favorites/check?product_id=xxx 检查收藏状态
   checkFavoriteStatus(productId) {
     const token = wx.getStorageSync('token');
-    if (!token) return;
-    api.getFavorites({ pageSize: 30 }).then(res => {
-      const items = res.data || res.items || (Array.isArray(res) ? res : []);
-      const fav = items.find(item => {
-        const pid = item.productId || item.product_id || (item.product && item.product.id);
-        return pid === Number(productId) || pid === String(productId);
-      });
-      if (fav) this.setData({ isFavorited: true });
-    }).catch(() => {});
+    if (!token) {
+      this.setData({ isFavorited: false });
+      return;
+    }
+    api.checkFavorite(productId).then(res => {
+      // 后端返回 { code:200, data:{ is_favorited: true/false } }
+      const inner = res.data || res;
+      const favorited = inner.is_favorited || inner.isFavorited || false;
+      console.log('[checkFavoriteStatus] productId:', productId, 'is_favorited:', favorited);
+      this.setData({ isFavorited: !!favorited });
+    }).catch(err => {
+      console.warn('[checkFavoriteStatus] failed:', err);
+      this.setData({ isFavorited: false });
+    });
   },
 
   onToggleFavorite() {
