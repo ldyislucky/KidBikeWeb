@@ -12,14 +12,34 @@
   </view>
 
   <block wx:else>
-    <!-- 产品大图 -->
+    <!-- 产品轮播图 -->
     <view class="detail-image-wrap">
-      <image
-        class="detail-image"
-        src="{{imgLoadError ? '/static/images/default-product.png' : imageUrl}}"
-        mode="aspectFill"
-        binderror="onImageError"
-      />
+      <swiper
+        class="detail-swiper"
+        indicator-dots="{{false}}"
+        autoplay="{{false}}"
+        circular="{{true}}"
+        current="{{currentSwiper}}"
+        bindchange="onSwiperChange"
+      >
+        <swiper-item wx:for="{{imageUrls}}" wx:key="index">
+          <image
+            class="detail-image"
+            src="{{imgLoadErrors[index] ? '/static/images/default-product.png' : item}}"
+            mode="aspectFill"
+            data-idx="{{index}}"
+            binderror="onImageError"
+          />
+        </swiper-item>
+      </swiper>
+      <!-- 自定义指示点 -->
+      <view class="swiper-dots" wx:if="{{imageUrls.length > 1}}">
+        <view
+          class="swiper-dot {{currentSwiper === index ? 'active' : ''}}"
+          wx:for="{{imageUrls}}"
+          wx:key="index"
+        ></view>
+      </view>
       <view class="image-badge image-badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
       <view class="image-badge image-badge-stock" wx:if="{{!product.isInStock}}">预售</view>
     </view>

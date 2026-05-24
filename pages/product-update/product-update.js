@@ -182,15 +182,12 @@ Page({
     this.setData({ submitting: true });
     wx.showLoading({ title: '保存中...' });
 
-    console.log('[onSubmit] localImages 数量:', d.localImages.length, '路径:', JSON.stringify(d.localImages));
-
     // 如果有本地暂存图片，先逐张上传到 /files/upload 拿 file_names
     const uploadPromise = d.localImages.length > 0
       ? this._uploadLocalImages()
       : Promise.resolve([]);
 
     uploadPromise.then((fileNames) => {
-      console.log('[onSubmit] 收集到的 fileNames:', JSON.stringify(fileNames));
       // 统一 PUT /api/v1/products/images/{id}，带上产品信息 + file_names
       const data = {
         file_names: fileNames,

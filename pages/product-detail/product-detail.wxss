@@ -35,7 +35,7 @@
   margin-bottom: 16rpx;
 }
 
-/* ========== 产品大图 ========== */
+/* ========== 产品轮播图 ========== */
 .detail-image-wrap {
   position: relative;
   width: 100%;
@@ -44,9 +44,40 @@
   background: linear-gradient(160deg, #FFF0EC, #FFE0D6);
 }
 
+.detail-swiper {
+  width: 100%;
+  height: 100%;
+}
+
 .detail-image {
   width: 100%;
   height: 100%;
+}
+
+/* 自定义指示点 */
+.swiper-dots {
+  position: absolute;
+  bottom: 24rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12rpx;
+  z-index: 3;
+}
+
+.swiper-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.25s;
+}
+
+.swiper-dot.active {
+  width: 32rpx;
+  border-radius: 7rpx;
+  background: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
 }
 
 .image-badge {

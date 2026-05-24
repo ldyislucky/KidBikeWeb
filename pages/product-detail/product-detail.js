@@ -3,8 +3,9 @@
 Page({
   data: {
     product: {},
-    imageUrl: '',
-    imgLoadError: false,
+    imageUrls: [],       // 所有图片 URL（image 主图 + images 列表）
+    currentSwiper: 0,    // 当前轮播索引
+    imgLoadErrors: [],   // 每张图片的加载状态
     loading: true,
     loadError: false,
     isFavorited: false,
@@ -36,10 +37,33 @@ Page({
       const product = res.data || res;
       const app = getApp();
       app.globalData.currentProduct = product;
+
+      // 构建图片列表：image 主图放第一，images 拼接在后面
+      const allUrls = [];
+      // 主图
+      if (product.image) {
+        allUrls.push(api.getImageUrl(product.image) || api.DEFAULT_PRODUCT_IMAGE);
+      }
+      // images 字段（逗号分隔的文件名）
+      const imagesRaw = product.images || '';
+      if (typeof imagesRaw === 'string' && imagesRaw.trim()) {
+        imagesRaw.split(',').map(s => s.trim()).filter(Boolean).forEach(fn => {
+          allUrls.push(api.getImageUrl(fn) || api.DEFAULT_PRODUCT_IMAGE);
+        });
+      } else if (Array.isArray(imagesRaw) && imagesRaw.length > 0) {
+        imagesRaw.forEach(fn => {
+          allUrls.push(api.getImageUrl(fn) || api.DEFAULT_PRODUCT_IMAGE);
+        });
+      }
+      // 一张图片都没有时给个默认图
+      if (allUrls.length === 0) {
+        allUrls.push(api.DEFAULT_PRODUCT_IMAGE);
+      }
+
       this.setData({
         product,
-        imageUrl: api.getImageUrl(product.image) || api.DEFAULT_PRODUCT_IMAGE,
-        imgLoadError: false,
+        imageUrls: allUrls,
+        imgLoadErrors: new Array(allUrls.length).fill(false),
         loading: false
       });
     }).catch(err => {
@@ -114,9 +138,14 @@ Page({
     };
   },
 
-  onImageError() {
-    if (!this.data.imgLoadError) {
-      this.setData({ imgLoadError: true });
+  onSwiperChange(e) {
+    this.setData({ currentSwiper: e.detail.current });
+  },
+
+  onImageError(e) {
+    const idx = e.currentTarget.dataset.idx;
+    if (idx !== undefined && !this.data.imgLoadErrors[idx]) {
+      this.setData({ ['imgLoadErrors[' + idx + ']']: true });
     }
   },
 
