@@ -6,8 +6,9 @@
       mode="aspectFill"
       binderror="onImageError"
     />
-    <view class="badge badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
-    <view class="badge badge-stock" wx:if="{{!product.isInStock}}">预售</view>
+    <view class="badge badge-rec" wx:if="{{product.is_recommend || product.isRecommend}}">推荐</view>
+    <view class="badge badge-stock badge-in" wx:if="{{product.is_in_stock || product.isInStock}}">现货</view>
+    <view class="badge badge-stock badge-pre" wx:else>预售</view>
   </view>
   <view class="card-body">
     <view class="card-title">{{product.title}}</view>
