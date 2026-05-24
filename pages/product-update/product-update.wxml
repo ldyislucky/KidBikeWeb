@@ -149,8 +149,8 @@
 
       <view class="switch-row">
         <view class="switch-info">
-          <text class="switch-label">主推产品</text>
-          <text class="switch-desc">开启后将在首页主推栏目展示</text>
+          <text class="switch-label">推荐产品</text>
+          <text class="switch-desc">开启后将在首页主推栏目展示推荐标志</text>
         </view>
         <switch checked="{{isRecommend}}" bindchange="onRecommendChange" color="#FF6B6B" />
       </view>
