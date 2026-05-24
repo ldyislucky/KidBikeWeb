@@ -59,13 +59,20 @@ Page({
     const { content, contactInfo, productId, submitting } = this.data;
     if (submitting) return;
 
+    if (!contactInfo.trim()) {
+      wx.showToast({ title: '请输入您的联系方式', icon: 'none' });
+      return;
+    }
+
     if (!content.trim()) {
       wx.showToast({ title: '请输入咨询内容', icon: 'none' });
       return;
     }
 
-    const data = { content: content.trim() };
-    if (contactInfo.trim()) data.contact = contactInfo.trim();
+    const data = {
+      content: content.trim(),
+      contact: contactInfo.trim()
+    };
     if (productId) data.productId = Number(productId);
 
     this.setData({ submitting: true });

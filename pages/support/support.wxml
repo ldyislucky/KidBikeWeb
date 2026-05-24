@@ -44,7 +44,7 @@
 
     <input
       class="inquiry-input"
-      placeholder="您的联系方式（选填）"
+      placeholder="您的联系方式（必填）"
       value="{{contactInfo}}"
       bindinput="onContactInput"
     />
