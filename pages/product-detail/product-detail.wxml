@@ -40,8 +40,9 @@
           wx:key="index"
         ></view>
       </view>
-      <view class="image-badge image-badge-rec" wx:if="{{product.isRecommend}}">推荐</view>
-      <view class="image-badge image-badge-stock" wx:if="{{!product.isInStock}}">预售</view>
+      <view class="image-badge image-badge-rec" wx:if="{{product.is_recommend || product.isRecommend}}">推荐</view>
+      <view class="image-badge image-badge-stock badge-in" wx:if="{{product.is_in_stock !== false && product.isInStock !== false}}">现货</view>
+      <view class="image-badge image-badge-stock badge-pre" wx:else>预售</view>
     </view>
 
     <!-- 产品信息卡片 -->
@@ -58,19 +59,19 @@
       <view class="detail-info-grid">
         <view class="info-item">
           <text class="info-label">货号</text>
-          <text class="info-value">{{product.itemNo}}</text>
+          <text class="info-value">{{product.item_no || product.itemNo}}</text>
         </view>
         <view class="info-item">
           <text class="info-label">更新时间</text>
-          <text class="info-value">{{product.updateTime}}</text>
+          <text class="info-value">{{product.updated_at}}</text>
         </view>
         <view class="info-item">
           <text class="info-label">推荐状态</text>
-          <text class="info-value {{product.isRecommend ? 'tag-rec' : ''}}">{{product.isRecommend ? '主推产品' : '常规产品'}}</text>
+          <text class="info-value {{product.is_recommend || product.isRecommend ? 'tag-rec' : ''}}">{{product.is_recommend || product.isRecommend ? '主推产品' : '常规产品'}}</text>
         </view>
         <view class="info-item">
           <text class="info-label">库存状态</text>
-          <text class="info-value {{product.isInStock ? 'tag-stock' : 'tag-pre'}}">{{product.isInStock ? '现货供应' : '预售中'}}</text>
+          <text class="info-value {{product.is_in_stock !== false && product.isInStock !== false ? 'tag-stock' : 'tag-pre'}}">{{product.is_in_stock !== false && product.isInStock !== false ? '现货供应' : '预售中'}}</text>
         </view>
       </view>
     </view>

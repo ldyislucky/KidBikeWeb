@@ -100,6 +100,14 @@
 .image-badge-stock {
   top: 24rpx;
   right: 24rpx;
+}
+
+.badge-in {
+  background: linear-gradient(135deg, #00b894, #00a381);
+  box-shadow: 0 4rpx 12rpx rgba(0, 184, 148, 0.35);
+}
+
+.badge-pre {
   background: rgba(255, 177, 66, 0.92);
 }
 
