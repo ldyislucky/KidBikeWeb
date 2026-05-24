@@ -113,14 +113,14 @@ const deleteProduct = (id) => {
   return request(`/api/v1/products/${id}`, { method: 'DELETE' });
 };
 
-// POST /api/v1/products/{id}/images — 添加图片到产品
-const addProductImages = (id, fileNames) => {
-  return request(`/api/v1/products/${id}/images`, { method: 'POST', data: { fileNames } });
+// PUT /api/v1/products/images/{id} — 更新产品信息 + 关联图片
+const addProductImages = (id, data) => {
+  return request(`/api/v1/products/images/${id}`, { method: 'PUT', data });
 };
 
-// DELETE /api/v1/products/{id}/images — 删除产品图片
+// DELETE /api/v1/products/images/{id} — 删除产品图片
 const deleteProductImages = (id, fileNames) => {
-  return request(`/api/v1/products/${id}/images`, { method: 'DELETE', data: { fileNames } });
+  return request(`/api/v1/products/images/${id}`, { method: 'DELETE', data: { file_names: fileNames } });
 };
 
 // ==================== Auth ====================

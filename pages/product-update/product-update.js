@@ -160,7 +160,7 @@ Page({
     this.setData({ ['serverImageUrls[' + idx + ']']: '/static/images/default-product.png' });
   },
 
-  // ========== 提交：先保存信息，再上传新图片 ==========
+  // ========== 提交：有图先上传 /files/upload → 最终统一 PUT /images/{id} ==========
   onSubmit() {
     const d = this.data;
     if (d.submitting) return;
@@ -179,28 +179,29 @@ Page({
     };
     if (d.description.trim()) productData.description = d.description.trim();
 
-    // 根据是否有新图片选择不同的提交方式
-    if (d.localImages.length > 0) {
-      this._submitWithImages(productData);
-    } else {
-      this._submitInfoOnly(productData);
-    }
-  },
-
-  // ========== 有新图片：先保存信息 → 再逐张上传图片 → 提交文件名 ==========
-  _submitWithImages(productData) {
     this.setData({ submitting: true });
     wx.showLoading({ title: '保存中...' });
 
-    // 第一步：保存产品基本信息
-    api.updateProduct(this.data.productId, productData).then(() => {
-      // 第二步：逐张上传图片
-      return this._uploadLocalImages();
-    }).then((fileNames) => {
-      // 第三步：如果上传了文件名，调用添加图片接口
-      if (fileNames && fileNames.length > 0) {
-        return api.addProductImages(this.data.productId, fileNames);
-      }
+    console.log('[onSubmit] localImages 数量:', d.localImages.length, '路径:', JSON.stringify(d.localImages));
+
+    // 如果有本地暂存图片，先逐张上传到 /files/upload 拿 file_names
+    const uploadPromise = d.localImages.length > 0
+      ? this._uploadLocalImages()
+      : Promise.resolve([]);
+
+    uploadPromise.then((fileNames) => {
+      console.log('[onSubmit] 收集到的 fileNames:', JSON.stringify(fileNames));
+      // 统一 PUT /api/v1/products/images/{id}，带上产品信息 + file_names
+      const data = {
+        file_names: fileNames,
+        title: productData.title,
+        item_no: productData.item_no,
+        price: productData.price,
+        is_recommend: productData.is_recommend,
+        is_in_stock: productData.is_in_stock
+      };
+      if (productData.description) data.description = productData.description;
+      return api.addProductImages(this.data.productId, data);
     }).then(() => {
       wx.hideLoading();
       this.setData({ submitting: false, localImages: [] });
@@ -213,23 +214,7 @@ Page({
     });
   },
 
-  // ========== 无新图片：纯 JSON 提交 ==========
-  _submitInfoOnly(productData) {
-    this.setData({ submitting: true });
-    wx.showLoading({ title: '保存中...' });
-
-    api.updateProduct(this.data.productId, productData).then(() => {
-      wx.hideLoading();
-      this.setData({ submitting: false });
-      wx.showToast({ title: '保存成功', icon: 'success' });
-    }).catch(err => {
-      wx.hideLoading();
-      this.setData({ submitting: false });
-      this._handleError(err);
-    });
-  },
-
-  // ========== 逐张上传本地暂存图片 ==========
+  // ========== 逐张上传本地图片到 /api/v1/files/upload，收集文件名 ==========
   _uploadLocalImages() {
     const filePaths = this.data.localImages;
     if (filePaths.length === 0) return Promise.resolve([]);
@@ -246,7 +231,20 @@ Page({
 
         wx.showLoading({ title: '上传图片 ' + (idx + 1) + '/' + filePaths.length });
         api.uploadFile(filePaths[idx]).then(res => {
-          const fileName = (res.data && res.data.file_name) || res.file_name || res.fileName || '';
+          // 后端返回格式：{ code, data: { url: "http://.../xxx.jpg" } }
+          let fileName = (res.data && res.data.file_name)
+            || (res.data && res.data.data && res.data.data.file_name)
+            || (res.data && res.data.filename)
+            || (res.data && res.data.data && res.data.data.filename)
+            || res.file_name || res.filename || res.fileName || '';
+          // 如果没有直接的文件名，尝试从 url 中提取
+          if (!fileName) {
+            const url = (res.data && res.data.data && res.data.data.url) || (res.data && res.data.url) || '';
+            if (url) {
+              const parts = url.split('/');
+              fileName = parts[parts.length - 1] || '';
+            }
+          }
           if (fileName) fileNames.push(fileName);
           idx++;
           uploadNext();
